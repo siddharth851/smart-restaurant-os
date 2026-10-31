@@ -1,0 +1,183 @@
+import { supabase } from "@/integrations/supabase/client";
+import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+
+export type PlatformRestaurant = {
+  id: string;
+  name: string;
+  slug: string;
+  ownerName: string;
+  phone: string;
+  email: string;
+  address: string;
+  description: string;
+  createdAt: string;
+  isSuspended: boolean;
+  itemCount: number;
+  categoryCount: number;
+  orderCount: number;
+  revenue: number;
+};
+
+export const platformRestaurantsQuery = queryOptions({
+  queryKey: ["platform-restaurants"],
+  queryFn: async (): Promise<PlatformRestaurant[]> => {
+    // 1. Fetch real restaurants from Supabase
+    const { data: restaurants, error } = await supabase
+      .from("restaurants")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    if (!restaurants || restaurants.length === 0) return [];
+
+    // 2. Fetch related items and categories for accurate counts
+    const [{ data: items }, { data: cats }, { data: orders }] = await Promise.all([
+      supabase.from("menu_items").select("restaurant_id"),
+      supabase.from("menu_categories").select("restaurant_id"),
+      supabase.from("orders").select("restaurant_id, total"),
+    ]);
+
+    const itemCounts = (items ?? []).reduce((acc: Record<string, number>, i) => {
+      acc[i.restaurant_id] = (acc[i.restaurant_id] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    const catCounts = (cats ?? []).reduce((acc: Record<string, number>, c) => {
+      acc[c.restaurant_id] = (acc[c.restaurant_id] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    const orderStats = (orders ?? []).reduce(
+      (acc: Record<string, { count: number; revenue: number }>, o) => {
+        if (!acc[o.restaurant_id]) acc[o.restaurant_id] = { count: 0, revenue: 0 };
+        acc[o.restaurant_id].count += 1;
+        acc[o.restaurant_id].revenue += Number(o.total || 0);
+        return acc;
+      },
+      {}
+    );
+
+    const activeRestaurants = (restaurants ?? []).filter((r) => !(r.description ?? "").includes("[ARCHIVED]"));
+
+    return activeRestaurants.map((r) => {
+      const isSuspended = (r.description ?? "").includes("[SUSPENDED]");
+      const cleanDesc = (r.description ?? "").replace(/\[(SUSPENDED|ARCHIVED)\]/g, "").trim();
+      const stats = orderStats[r.id] ?? { count: 0, revenue: 0 };
+
+      return {
+        id: r.id,
+        name: r.name,
+        slug: r.slug,
+        ownerName: r.name ? `${r.name} Partner` : "Owner",
+        phone: r.phone ?? "N/A",
+        email: r.email ?? "N/A",
+        address: r.address ?? "Standard Outlet",
+        description: cleanDesc,
+        createdAt: r.created_at,
+        isSuspended,
+        itemCount: itemCounts[r.id] ?? 0,
+        categoryCount: catCounts[r.id] ?? 0,
+        orderCount: stats.count,
+        revenue: stats.revenue,
+      };
+    });
+  },
+});
+
+export function usePlatformRestaurantMutations() {
+  const qc = useQueryClient();
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["platform-restaurants"] });
+    qc.invalidateQueries({ queryKey: ["platform-analytics"] });
+    qc.invalidateQueries({ queryKey: ["public-menu"] });
+  };
+
+  return {
+    add: useMutation({
+      mutationFn: async (input: { name: string; slug?: string; phone?: string; email?: string; address?: string; description?: string }) => {
+        const id = crypto.randomUUID();
+        const baseSlug = input.slug?.trim() || input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant";
+        const slug = `${baseSlug}-${id.replace(/-/g, "").slice(0, 6)}`;
+
+        const { error } = await supabase.from("restaurants").insert({
+          id,
+          owner_id: crypto.randomUUID(),
+          name: input.name.trim(),
+          slug,
+          phone: input.phone?.trim() || null,
+          email: input.email?.trim() || null,
+          address: input.address?.trim() || null,
+          description: input.description?.trim() || null,
+        });
+        if (error) throw error;
+      },
+      onSuccess: invalidate,
+    }),
+
+    edit: useMutation({
+      mutationFn: async (input: { id: string; name: string; phone?: string; email?: string; address?: string; description?: string }) => {
+        // Read current description to maintain suspension state if any
+        const { data: current } = await supabase.from("restaurants").select("description").eq("id", input.id).single();
+        const wasSuspended = (current?.description ?? "").includes("[SUSPENDED]");
+        const newDesc = wasSuspended 
+          ? `[SUSPENDED] ${input.description ?? ""}`.trim() 
+          : input.description?.trim() || null;
+
+        const { error } = await supabase.from("restaurants").update({
+          name: input.name.trim(),
+          phone: input.phone?.trim() || null,
+          email: input.email?.trim() || null,
+          address: input.address?.trim() || null,
+          description: newDesc,
+        }).eq("id", input.id);
+        if (error) throw error;
+      },
+      onSuccess: invalidate,
+    }),
+
+    toggleSuspension: useMutation({
+      mutationFn: async ({ id, suspend }: { id: string; suspend: boolean }) => {
+        const { data: current, error: getErr } = await supabase.from("restaurants").select("description").eq("id", id).single();
+        if (getErr) throw getErr;
+
+        let desc = (current?.description ?? "").replace("[SUSPENDED]", "").trim();
+        if (suspend) {
+          desc = `[SUSPENDED] ${desc}`.trim();
+        }
+
+        const { error } = await supabase.from("restaurants").update({ description: desc }).eq("id", id);
+        if (error) throw error;
+      },
+      onSuccess: invalidate,
+    }),
+
+    deleteRestaurant: useMutation({
+      mutationFn: async (id: string) => {
+        // Safe deletion preserving order history and financial records:
+        const { data: existingOrders } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("restaurant_id", id)
+          .limit(1);
+
+        if (existingOrders && existingOrders.length > 0) {
+          // Soft-delete / Archive restaurant so all historic orders, transactions, and analytics remain intact
+          const { data: current } = await supabase.from("restaurants").select("description").eq("id", id).single();
+          const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
+          const { error } = await supabase.from("restaurants").update({ description: `[ARCHIVED] ${cleanDesc}`.trim() }).eq("id", id);
+          if (error) throw error;
+        } else {
+          // If no order history exists, safe to delete from table
+          const { error } = await supabase.from("restaurants").delete().eq("id", id);
+          if (error) {
+            // If FK constraint prevents hard delete, archive safely
+            const { data: current } = await supabase.from("restaurants").select("description").eq("id", id).single();
+            const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
+            await supabase.from("restaurants").update({ description: `[ARCHIVED] ${cleanDesc}`.trim() }).eq("id", id);
+          }
+        }
+      },
+      onSuccess: invalidate,
+    }),
+  };
+}
