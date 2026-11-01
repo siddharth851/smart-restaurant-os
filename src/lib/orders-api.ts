@@ -48,17 +48,27 @@ export const restaurantOrdersQuery = (restaurantId: string) =>
         .eq("restaurant_id", restaurantId)
         .order("created_at", { ascending: false })
         .limit(200);
-      if (error) throw error;
-      return data.map((o) => ({
+
+      if (error) {
+        console.error("Failed to query orders for restaurant", restaurantId, error);
+        throw error;
+      }
+
+      return (data ?? []).map((o) => ({
         id: o.id,
         code: o.order_code,
         table: o.table_number,
         customerName: o.customer_name,
-        notes: o.notes,
+        notes: o.notes ?? "",
         total: Number(o.total),
         status: o.status as OrderStatus,
         createdAt: o.created_at,
-        items: o.order_items.map((i) => ({ id: i.id, name: i.name, qty: i.quantity, price: Number(i.unit_price) })),
+        items: (o.order_items ?? []).map((i) => ({ 
+          id: i.id, 
+          name: i.name, 
+          qty: i.quantity, 
+          price: Number(i.unit_price) 
+        })),
       }));
     },
   });
@@ -130,7 +140,7 @@ export const trackOrderQuery = (code: string) =>
         createdAt: String(d.created_at),
         restaurantName: String(d.restaurant_name),
         slug: String(d.slug),
-        items: d.items.map((i) => ({ name: i.name, qty: Number(i.qty), price: Number(i.price) })),
+        items: (d.items ?? []).map((i) => ({ name: i.name, qty: Number(i.qty), price: Number(i.price) })),
       };
     },
   });

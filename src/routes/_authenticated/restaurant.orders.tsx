@@ -26,7 +26,7 @@ function OrdersPage() {
 function OrdersList({ restaurantId }: { restaurantId: string }) {
   useOrdersRealtime(restaurantId);
   const [f, setF] = useState<"all" | OrderStatus>("all");
-  const { data, isLoading, isError } = useQuery(restaurantOrdersQuery(restaurantId));
+  const { data, isLoading, isError, refetch } = useQuery(restaurantOrdersQuery(restaurantId));
   const update = useUpdateOrderStatus(restaurantId);
   const list = (data ?? []).filter((o) => f === "all" || o.status === f);
 
@@ -58,7 +58,15 @@ function OrdersList({ restaurantId }: { restaurantId: string }) {
           </div>
         ) : isError ? (
           <div className="py-14 text-center">
-            <p className="text-sm font-semibold text-rose-600">Couldn't load orders from the database.</p>
+            <p className="text-sm font-semibold text-rose-600 mb-3">Couldn't load orders from the database.</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="rounded-xl border-stone-200 hover:bg-stone-50"
+            >
+              Retry Loading Orders
+            </Button>
           </div>
         ) : list.length === 0 ? (
           <div className="py-16 text-center">

@@ -56,10 +56,10 @@ export function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
             Live System Demo
           </div>
           <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
-            Explore All 4 Live Panels
+            Explore All 3 Experiences
           </h3>
           <p className="mt-1 text-sm text-stone-400">
-            DineOS is fully integrated. Click any panel below to test the live working application right now.
+            Smart Restaurant OS is fully integrated. Select any experience below to explore the live system.
           </p>
         </div>
 

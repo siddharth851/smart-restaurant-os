@@ -88,15 +88,20 @@ export async function loadAuthInfo(): Promise<AuthInfo | null> {
     // continue to local session fallback
   }
 
-  // 2. Check local session bridge (used for direct non-email-link sessions & super admin)
+  // 2. Super Admin server-side authorized session bridge
   const local = getLocalSession();
-  if (local) {
+  if (local && local.roles.includes("super_admin")) {
     return {
       userId: local.userId,
       email: local.email,
       name: local.name,
-      roles: local.roles,
+      roles: ["super_admin"],
     };
+  }
+
+  // Stale owner session without active Supabase credentials — clean up to prevent unauthenticated database queries
+  if (local) {
+    setLocalSession(null);
   }
 
   return null;

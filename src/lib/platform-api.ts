@@ -109,7 +109,12 @@ export function usePlatformRestaurantMutations() {
           address: input.address?.trim() || null,
           description: input.description?.trim() || null,
         });
-        if (error) throw error;
+        if (error) {
+          if (error.code === "42501") {
+            throw new Error("Restaurants must be registered via the Owner Registration flow (/register) to establish authentic owner credentials.");
+          }
+          throw error;
+        }
       },
       onSuccess: invalidate,
     }),

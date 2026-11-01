@@ -2,7 +2,7 @@ import {
   QrCode,
   ChefHat,
   BookOpen,
-  Users,
+  Clock,
   BarChart3,
   LayoutGrid,
 } from "lucide-react";
@@ -31,9 +31,9 @@ export function FeaturesSection() {
       accent: "text-sky-700",
     },
     {
-      title: "Staff Management",
-      desc: "Add staff and control permissions across managers, chefs and floor staff.",
-      icon: Users,
+      title: "Live Order Tracking",
+      desc: "Guests track their order status live from received to served without logging in.",
+      icon: Clock,
       color: "bg-purple-50 text-purple-600 border-purple-200/60",
       accent: "text-purple-700",
     },
