@@ -1,5 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { 
+  adminEditRestaurantServer, 
+  adminToggleSuspensionServer, 
+  adminDeleteRestaurantServer 
+} from "./platform.server";
 
 export type PlatformRestaurant = {
   id: string;
@@ -121,66 +126,21 @@ export function usePlatformRestaurantMutations() {
 
     edit: useMutation({
       mutationFn: async (input: { id: string; name: string; phone?: string; email?: string; address?: string; description?: string }) => {
-        // Read current description to maintain suspension state if any
-        const { data: current } = await supabase.from("restaurants").select("description").eq("id", input.id).single();
-        const wasSuspended = (current?.description ?? "").includes("[SUSPENDED]");
-        const newDesc = wasSuspended 
-          ? `[SUSPENDED] ${input.description ?? ""}`.trim() 
-          : input.description?.trim() || null;
-
-        const { error } = await supabase.from("restaurants").update({
-          name: input.name.trim(),
-          phone: input.phone?.trim() || null,
-          email: input.email?.trim() || null,
-          address: input.address?.trim() || null,
-          description: newDesc,
-        }).eq("id", input.id);
-        if (error) throw error;
+        await adminEditRestaurantServer({ data: input });
       },
       onSuccess: invalidate,
     }),
 
     toggleSuspension: useMutation({
       mutationFn: async ({ id, suspend }: { id: string; suspend: boolean }) => {
-        const { data: current, error: getErr } = await supabase.from("restaurants").select("description").eq("id", id).single();
-        if (getErr) throw getErr;
-
-        let desc = (current?.description ?? "").replace("[SUSPENDED]", "").trim();
-        if (suspend) {
-          desc = `[SUSPENDED] ${desc}`.trim();
-        }
-
-        const { error } = await supabase.from("restaurants").update({ description: desc }).eq("id", id);
-        if (error) throw error;
+        await adminToggleSuspensionServer({ data: { id, suspend } });
       },
       onSuccess: invalidate,
     }),
 
     deleteRestaurant: useMutation({
       mutationFn: async (id: string) => {
-        // Safe deletion preserving order history and financial records:
-        const { data: existingOrders } = await supabase
-          .from("orders")
-          .select("id")
-          .eq("restaurant_id", id)
-          .limit(1);
-
-        if (existingOrders && existingOrders.length > 0) {
-          // Soft-delete / Archive restaurant so all historic orders, transactions, and analytics remain intact
-          const { data: current } = await supabase.from("restaurants").select("description").eq("id", id).single();
-          const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
-          const { error } = await supabase.from("restaurants").update({ description: `[ARCHIVED] ${cleanDesc}`.trim() }).eq("id", id);
-          if (error) throw error;
-        } else {
-          // If no order history exists, safe to delete from table
-          const { error } = await supabase.from("restaurants").delete().eq("id", id);
-          if (error) {
-            // If FK constraint prevents hard delete, archive safely
-            const { data: current } = await supabase.from("restaurants").select("description").eq("id", id).single();
-            const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
-            await supabase.from("restaurants").update({ description: `[ARCHIVED] ${cleanDesc}`.trim() }).eq("id", id);
-          }
-        }
+        await adminDeleteRestaurantServer({ data: { id } });
       },
       onSuccess: invalidate,
     }),
