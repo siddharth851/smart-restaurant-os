@@ -74,7 +74,8 @@ export const myRestaurantQuery = (userId: string) =>
       }
 
       // 2. Query restaurant where owner_id matches the authenticated user ID
-      const { data, error } = await supabase
+      // eslint-disable-next-line prefer-const
+      let { data, error } = await supabase
         .from("restaurants")
         .select("*")
         .eq("owner_id", effectiveUserId)

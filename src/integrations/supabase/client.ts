@@ -55,20 +55,29 @@ function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof f
 }
 
 function createSupabaseClient() {
+  const TARGET_PROJECT_ID = "smaziwkpqjlupzbffjmk";
+  const TARGET_URL = `https://${TARGET_PROJECT_ID}.supabase.co`;
+  const TARGET_KEY = "sb_publishable_TfzzBylG2LE5QGkqtnW81Q_a48_AmO0";
+
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env["VITE_SUPABASE_URL"] || process.env["SUPABASE_URL"];
-  const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_PUBLISHABLE_KEY"];
+  let SUPABASE_URL = (
+    import.meta.env.VITE_SUPABASE_URL ||
+    process.env["SUPABASE_URL"] ||
+    ""
+  ).trim();
+  let SUPABASE_PUBLISHABLE_KEY = (
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    ""
+  ).trim();
 
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ["SUPABASE_URL"] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+  // If build or server environment has missing or stale reference to the old project, enforce the target project
+  if (!SUPABASE_URL || SUPABASE_URL.includes("yzjpeecxspwpegodjian")) {
+    SUPABASE_URL = TARGET_URL;
+  }
+  if (!SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY.includes("AOthNkqoXfS2OVccyQ4")) {
+    SUPABASE_PUBLISHABLE_KEY = TARGET_KEY;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

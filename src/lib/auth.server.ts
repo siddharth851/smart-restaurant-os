@@ -14,10 +14,17 @@ const confirmSchema = z.object({
  */
 export async function confirmUnconfirmedAccount(email: string) {
   const cleanEmail = email.trim().toLowerCase();
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const TARGET_PROJECT_ID = "smaziwkpqjlupzbffjmk";
+  const TARGET_URL = `https://${TARGET_PROJECT_ID}.supabase.co`;
 
-  if (!supabaseUrl || !serviceRoleKey) {
+  let supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "").trim();
+  const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+
+  if (!supabaseUrl || supabaseUrl.includes("yzjpeecxspwpegodjian")) {
+    supabaseUrl = TARGET_URL;
+  }
+
+  if (!serviceRoleKey) {
     return {
       ok: false,
       error: "SUPABASE_SERVICE_ROLE_KEY is not configured in the server environment.",

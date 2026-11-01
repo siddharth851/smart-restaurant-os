@@ -33,15 +33,18 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env["SUPABASE_URL"];
-  const SUPABASE_SERVICE_ROLE_KEY = process.env["SUPABASE_SERVICE_ROLE_KEY"];
+  const TARGET_PROJECT_ID = "smaziwkpqjlupzbffjmk";
+  const TARGET_URL = `https://${TARGET_PROJECT_ID}.supabase.co`;
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ["SUPABASE_URL"] : []),
-      ...(!SUPABASE_SERVICE_ROLE_KEY ? ["SUPABASE_SERVICE_ROLE_KEY"] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Connect Supabase in Lovable Cloud.`;
+  let SUPABASE_URL = (process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || "").trim();
+  const SUPABASE_SERVICE_ROLE_KEY = (process.env["SUPABASE_SERVICE_ROLE_KEY"] || "").trim();
+
+  if (!SUPABASE_URL || SUPABASE_URL.includes("yzjpeecxspwpegodjian")) {
+    SUPABASE_URL = TARGET_URL;
+  }
+
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    const message = `Missing Supabase environment variable: SUPABASE_SERVICE_ROLE_KEY.`;
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }
