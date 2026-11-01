@@ -20,7 +20,7 @@ export function WithOwnerRestaurant({ children }: { children: (r: NonNullable<Re
     return (
       <Panel>
         <p className="font-semibold">No restaurant linked to this account</p>
-        <p className="mt-1 text-sm text-muted-foreground">Menu editing is available to restaurant owners. Staff access to shared restaurants arrives in a later update.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Please register your restaurant to access the management dashboard.</p>
       </Panel>
     );
   return <>{children(data, auth.userId)}</>;

@@ -47,9 +47,48 @@ export function setLocalSession(session: LocalSession | null) {
   }
 }
 
-/** Roles come from user_roles table or active authenticated session. */
+/** Roles come from active authenticated Supabase session or verified local session. */
 export async function loadAuthInfo(): Promise<AuthInfo | null> {
-  // 1. Check local session bridge (used for direct non-email-link sessions & super admin)
+  // 1. Check Supabase Auth session first (canonical ground-truth)
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error && data?.user) {
+      const user = data.user;
+      const [{ data: roles }, { data: profile }, { data: myRest }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", user.id),
+        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+        supabase.from("restaurants").select("id, slug").eq("owner_id", user.id).limit(1).maybeSingle(),
+      ]);
+
+      const userRoles = (roles ?? []).map((r) => r.role);
+      if (userRoles.length === 0 || myRest) {
+        if (!userRoles.includes("restaurant_owner") && myRest) {
+          userRoles.push("restaurant_owner");
+        }
+      }
+
+      // Sync local session with the real Supabase Auth user so helpers never have stale IDs
+      setLocalSession({
+        userId: user.id,
+        email: user.email ?? "",
+        name: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "Restaurant Owner",
+        roles: userRoles.length > 0 ? userRoles : ["restaurant_owner"],
+        restaurantId: myRest?.id,
+        restaurantSlug: myRest?.slug,
+      });
+
+      return {
+        userId: user.id,
+        email: user.email ?? "",
+        name: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "Account",
+        roles: userRoles.length > 0 ? userRoles : ["restaurant_owner"],
+      };
+    }
+  } catch {
+    // continue to local session fallback
+  }
+
+  // 2. Check local session bridge (used for direct non-email-link sessions & super admin)
   const local = getLocalSession();
   if (local) {
     return {
@@ -60,32 +99,7 @@ export async function loadAuthInfo(): Promise<AuthInfo | null> {
     };
   }
 
-  // 2. Check Supabase Auth session
-  try {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) return null;
-    const user = data.user;
-    const [{ data: roles }, { data: profile }] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", user.id),
-      supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-    ]);
-
-    const userRoles = (roles ?? []).map((r) => r.role);
-    // If user has a restaurant in the database matching their owner_id, they are an owner
-    if (userRoles.length === 0) {
-      const { data: myRest } = await supabase.from("restaurants").select("id").eq("owner_id", user.id).limit(1).maybeSingle();
-      if (myRest) userRoles.push("restaurant_owner");
-    }
-
-    return {
-      userId: user.id,
-      email: user.email ?? "",
-      name: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "Account",
-      roles: userRoles,
-    };
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export async function signOutAll(): Promise<void> {

@@ -6,6 +6,8 @@ import { Bell, LogOut, Menu, Search, X, type LucideIcon, Sparkles } from "lucide
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+import { signOutAll } from "@/lib/auth";
+
 export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean };
 
 type Props = {
@@ -28,7 +30,7 @@ export function PanelShell({ brand, subtitle, nav, user, footer }: Props) {
     setSigningOut(true);
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await signOutAll();
     navigate({ to: "/login", replace: true });
   };
 

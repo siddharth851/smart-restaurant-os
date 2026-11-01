@@ -42,11 +42,13 @@ function KitchenLayout() {
   );
 }
 
+import { signOutAll } from "@/lib/auth";
+
 function KitchenSignOut() {
   const navigate = useNavigate();
   return (
     <button
-      onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/login", replace: true }); }}
+      onClick={async () => { await signOutAll(); navigate({ to: "/login", replace: true }); }}
       className="grid h-10 w-10 place-items-center rounded-lg bg-kds-card" aria-label="Sign out" title="Sign out"
     >
       <LogOut className="h-4 w-4" />

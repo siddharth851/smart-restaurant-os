@@ -47,24 +47,47 @@ export const myRestaurantQuery = (userId: string) =>
   queryOptions({
     queryKey: ["my-restaurant", userId],
     queryFn: async () => {
-      // 1. Try owner_id lookup
-      let { data, error } = await supabase.from("restaurants").select("*").eq("owner_id", userId).order("created_at").limit(1).maybeSingle();
-      if (error) throw error;
+      // 1. Resolve true authenticated user ID from Supabase Auth
+      let effectiveUserId = userId;
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        if (authData?.user?.id) {
+          effectiveUserId = authData.user.id;
+        }
+      } catch {
+        // use parameter userId
+      }
+
+      // 2. Query restaurant where owner_id matches the authenticated user ID
+      let { data, error } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("owner_id", effectiveUserId)
+        .order("created_at")
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error querying restaurant by owner_id:", error);
+      }
       
-      // 2. If not found, check local session for explicit restaurant ID or slug
-      if (!data) {
-        const local = getLocalSession();
+      const local = getLocalSession();
+      const isSuperAdmin = userId === SUPER_ADMIN_ID || local?.roles.includes("super_admin");
+
+      // 3. Fallback only for Super Admin inspecting the fleet
+      if (!data && isSuperAdmin) {
         if (local?.restaurantId) {
           const res = await supabase.from("restaurants").select("*").eq("id", local.restaurantId).maybeSingle();
           if (res.data) data = res.data;
-        } else if (local?.restaurantSlug) {
-          const res = await supabase.from("restaurants").select("*").eq("slug", local.restaurantSlug).maybeSingle();
-          if (res.data) data = res.data;
-        } else if (userId === SUPER_ADMIN_ID || local?.roles.includes("super_admin") || local?.roles.includes("kitchen_staff")) {
-          // Fallback to first registered restaurant for super admin or kitchen preview
+        } else {
           const res = await supabase.from("restaurants").select("*").order("created_at").limit(1).maybeSingle();
           if (res.data) data = res.data;
         }
+      }
+
+      // Strict tenant isolation guard: an owner can never access another owner's restaurant
+      if (data && !isSuperAdmin && data.owner_id !== effectiveUserId) {
+        data = null;
       }
 
       if (!data) return null;

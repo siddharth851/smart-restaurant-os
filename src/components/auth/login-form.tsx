@@ -74,61 +74,42 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
     try {
       const { data: suData, error: suError } = await supabase.auth.signInWithPassword({ email, password });
       
-      if (!suError && suData.user) {
-        const info = await loadAuthInfo();
-        if (!info || !hasAnyRole(info.roles, allowed)) {
-          await supabase.auth.signOut();
-          setLoading(false);
-          setFormError(wrongPortalHint);
-          return;
-        }
-        const target = safeRedirect(redirectTo) ?? homeForRoles(info.roles);
+      if (suError) {
+        setLoading(false);
+        setFormError(suError.message || "Incorrect email or password.");
+        return;
+      }
+
+      if (suData.user) {
+        // Clear old local session so stale storage never overrides real Supabase user
+        setLocalSession(null);
+
+        // Look up the restaurant owned by this authenticated user
+        const { data: rest } = await supabase
+          .from("restaurants")
+          .select("id, name, slug")
+          .eq("owner_id", suData.user.id)
+          .limit(1)
+          .maybeSingle();
+
+        // Establish verified session with genuine Supabase user ID and restaurant ID
+        setLocalSession({
+          userId: suData.user.id,
+          email: suData.user.email ?? email,
+          name: (suData.user.user_metadata?.full_name as string) || rest?.name || "Restaurant Owner",
+          roles: ["restaurant_owner"],
+          restaurantId: rest?.id,
+          restaurantSlug: rest?.slug,
+        });
+
+        const target = safeRedirect(redirectTo) ?? "/restaurant";
         navigate({ to: target, replace: true });
         return;
       }
-    } catch {
-      // continue to fallback check below
-    }
-
-    // 3. Fallback Authentication for Restaurant Owner (avoids email confirmation roadblocks)
-    try {
-      const { data: rest } = await supabase.from("restaurants").select("*").eq("email", email.toLowerCase()).limit(1).maybeSingle();
-      
-      if (rest) {
-        setLocalSession({
-          userId: rest.owner_id,
-          email: rest.email ?? email,
-          name: rest.name ? `${rest.name} Owner` : "Restaurant Owner",
-          roles: ["restaurant_owner"],
-          restaurantId: rest.id,
-          restaurantSlug: rest.slug,
-        });
-        setLoading(false);
-        navigate({ to: "/restaurant", replace: true });
-        return;
-      }
-
-      // Check registered owners in local storage registry
-      const regRegistryRaw = localStorage.getItem("smartos_registered_accounts");
-      if (regRegistryRaw) {
-        const registry = JSON.parse(regRegistryRaw) as Record<string, { userId: string; restaurantId: string; slug: string; name: string }>;
-        const found = registry[email.toLowerCase()];
-        if (found) {
-          setLocalSession({
-            userId: found.userId,
-            email,
-            name: found.name,
-            roles: ["restaurant_owner"],
-            restaurantId: found.restaurantId,
-            restaurantSlug: found.slug,
-          });
-          setLoading(false);
-          navigate({ to: "/restaurant", replace: true });
-          return;
-        }
-      }
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      setLoading(false);
+      setFormError(err instanceof Error ? err.message : "Authentication error. Please check your credentials.");
+      return;
     }
 
     setLoading(false);

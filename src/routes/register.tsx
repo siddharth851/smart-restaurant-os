@@ -81,38 +81,41 @@ function Register() {
         },
       });
 
-      const userId = suData.user?.id || crypto.randomUUID();
-      const baseSlug = d.restaurantName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant";
-      const slug = `${baseSlug}-${userId.replace(/-/g, "").slice(0, 6)}`;
-
-      // 2. Fallback ensure restaurant row in DB if trigger hasn't fired yet
-      const { data: existingRest } = await supabase.from("restaurants").select("id, slug").eq("owner_id", userId).maybeSingle();
-      const restaurantId = existingRest?.id || crypto.randomUUID();
-      const restaurantSlug = existingRest?.slug || slug;
-
-      if (!existingRest) {
-        // Try insert directly if permitted
-        await supabase.from("restaurants").insert({
-          id: restaurantId,
-          owner_id: userId,
-          name: d.restaurantName,
-          slug: restaurantSlug,
-          email: d.email,
-        }).select().maybeSingle();
+      if (suError) {
+        throw suError;
       }
 
-      // 3. Save to registered accounts registry for immediate seamless login
-      const regRegistryRaw = localStorage.getItem("smartos_registered_accounts");
-      const registry = regRegistryRaw ? JSON.parse(regRegistryRaw) : {};
-      registry[d.email.toLowerCase()] = {
-        userId,
-        restaurantId,
-        slug: restaurantSlug,
-        name: d.ownerName,
-      };
-      localStorage.setItem("smartos_registered_accounts", JSON.stringify(registry));
+      if (!suData.user) {
+        throw new Error("Unable to create account. Please try again.");
+      }
 
-      // 4. Immediately establish session — NO EMAIL CONFIRMATION ROADBLOCK
+      // Supabase returns an empty identities list if the email already exists
+      if (suData.user.identities && suData.user.identities.length === 0) {
+        throw new Error("An account with this email already exists. Please sign in instead.");
+      }
+
+      const userId = suData.user.id;
+
+      // 2. Wait for the PostgreSQL trigger handle_new_user() to commit the restaurant and roles
+      let restaurantId: string | undefined;
+      let restaurantSlug: string | undefined;
+
+      for (let i = 0; i < 6; i++) {
+        const { data: rest } = await supabase
+          .from("restaurants")
+          .select("id, slug, name")
+          .eq("owner_id", userId)
+          .maybeSingle();
+
+        if (rest) {
+          restaurantId = rest.id;
+          restaurantSlug = rest.slug;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      // 3. Establish verified session with genuine Supabase user ID and restaurant ID
       setLocalSession({
         userId,
         email: d.email,
