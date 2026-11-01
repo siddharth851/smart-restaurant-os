@@ -58,7 +58,8 @@ export function AuthShell({
             Every table, every order, one calm system.
           </h2>
           <p className="text-sm text-stone-300 leading-relaxed">
-            Eliminate chaotic handwritten tickets and wait times. Built for high-volume dining rooms, busy kitchens, and multi-location managers.
+            Eliminate chaotic handwritten tickets and wait times. Built for high-volume dining
+            rooms, busy kitchens, and multi-location managers.
           </p>
 
           <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/10">
@@ -102,9 +103,7 @@ export function AuthShell({
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-1.5 text-sm text-stone-600 leading-relaxed">
-                {subtitle}
-              </p>
+              <p className="mt-1.5 text-sm text-stone-600 leading-relaxed">{subtitle}</p>
             )}
           </div>
 
@@ -113,9 +112,7 @@ export function AuthShell({
           </div>
 
           {footer && (
-            <div className="mt-6 text-center text-xs text-stone-600 space-y-1">
-              {footer}
-            </div>
+            <div className="mt-6 text-center text-xs text-stone-600 space-y-1">{footer}</div>
           )}
         </div>
       </main>
@@ -125,16 +122,12 @@ export function AuthShell({
 
 export function FieldError({ message }: { message?: string | undefined }) {
   if (!message) return null;
-  return <p className="mt-1.5 text-xs font-semibold text-rose-600 flex items-center gap-1">{message}</p>;
+  return (
+    <p className="mt-1.5 text-xs font-semibold text-rose-600 flex items-center gap-1">{message}</p>
+  );
 }
 
-export function FormAlert({
-  tone,
-  children,
-}: {
-  tone: "error" | "success";
-  children: ReactNode;
-}) {
+export function FormAlert({ tone, children }: { tone: "error" | "success"; children: ReactNode }) {
   return (
     <div
       role="alert"

@@ -3,7 +3,13 @@ import { cn } from "@/lib/utils";
 import { User, Hash } from "lucide-react";
 
 /** Customer name + table number (no login). Values live in the cart context. */
-export function GuestDetails({ errors, className }: { errors?: { customerName?: string | undefined; table?: string | undefined }; className?: string }) {
+export function GuestDetails({
+  errors,
+  className,
+}: {
+  errors?: { customerName?: string | undefined; table?: string | undefined };
+  className?: string;
+}) {
   const cart = useCart();
   return (
     <div className={cn("grid grid-cols-[1fr_7.5rem] gap-3", className)}>
@@ -19,10 +25,14 @@ export function GuestDetails({ errors, className }: { errors?: { customerName?: 
           aria-invalid={!!errors?.customerName}
           className={cn(
             "h-11 w-full rounded-xl border border-border/70 bg-card px-3.5 text-sm font-medium text-foreground transition-all placeholder:text-muted-foreground/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20 shadow-xs",
-            errors?.customerName && "border-destructive focus:ring-destructive/20"
+            errors?.customerName && "border-destructive focus:ring-destructive/20",
           )}
         />
-        {errors?.customerName && <span className="mt-1 block text-xs font-medium text-destructive">{errors.customerName}</span>}
+        {errors?.customerName && (
+          <span className="mt-1 block text-xs font-medium text-destructive">
+            {errors.customerName}
+          </span>
+        )}
       </label>
       <label className="text-xs font-semibold text-foreground/80">
         <span className="mb-1.5 flex items-center gap-1.5">
@@ -30,18 +40,22 @@ export function GuestDetails({ errors, className }: { errors?: { customerName?: 
         </span>
         <input
           value={cart.table ?? ""}
-          onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 3); cart.setTable(v ? Number(v) : null); }}
+          onChange={(e) => {
+            const v = e.target.value.replace(/\D/g, "").slice(0, 3);
+            cart.setTable(v ? Number(v) : null);
+          }}
           placeholder="4"
           inputMode="numeric"
           aria-invalid={!!errors?.table}
           className={cn(
             "h-11 w-full rounded-xl border border-border/70 bg-card px-3.5 text-sm font-medium text-foreground transition-all placeholder:text-muted-foreground/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20 shadow-xs text-center sm:text-left",
-            errors?.table && "border-destructive focus:ring-destructive/20"
+            errors?.table && "border-destructive focus:ring-destructive/20",
           )}
         />
-        {errors?.table && <span className="mt-1 block text-xs font-medium text-destructive">{errors.table}</span>}
+        {errors?.table && (
+          <span className="mt-1 block text-xs font-medium text-destructive">{errors.table}</span>
+        )}
       </label>
     </div>
   );
 }
-

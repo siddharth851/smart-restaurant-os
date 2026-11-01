@@ -1,4 +1,5 @@
 <!-- LOVABLE:BEGIN -->
+
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
@@ -7,9 +8,11 @@
 >
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
+
 <!-- LOVABLE:END -->
 
 ## Architecture
+
 - Panels: customer `/menu/$restaurantSlug/*`, admin `/restaurant/*`, kitchen `/kitchen/*`, super admin `/platform/*`; admin/platform share `components/shared/panel-shell.tsx` — keep panels separated by route prefix so later parts can add auth per panel.
 - Demo content lives only in `src/lib/demo-data.ts` — swap it for backend queries later without touching page layouts.
 - No payment/billing modules (user requirement).

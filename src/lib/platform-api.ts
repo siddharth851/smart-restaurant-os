@@ -1,9 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  adminEditRestaurantServer, 
-  adminToggleSuspensionServer, 
-  adminDeleteRestaurantServer 
+import {
+  adminEditRestaurantServer,
+  adminToggleSuspensionServer,
+  adminDeleteRestaurantServer,
 } from "./platform.server";
 
 export type PlatformRestaurant = {
@@ -59,10 +59,12 @@ export const platformRestaurantsQuery = queryOptions({
         acc[o.restaurant_id].revenue += Number(o.total || 0);
         return acc;
       },
-      {}
+      {},
     );
 
-    const activeRestaurants = (restaurants ?? []).filter((r) => !(r.description ?? "").includes("[ARCHIVED]"));
+    const activeRestaurants = (restaurants ?? []).filter(
+      (r) => !(r.description ?? "").includes("[ARCHIVED]"),
+    );
 
     return activeRestaurants.map((r) => {
       const isSuspended = (r.description ?? "").includes("[SUSPENDED]");
@@ -99,9 +101,22 @@ export function usePlatformRestaurantMutations() {
 
   return {
     add: useMutation({
-      mutationFn: async (input: { name: string; slug?: string; phone?: string; email?: string; address?: string; description?: string }) => {
+      mutationFn: async (input: {
+        name: string;
+        slug?: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+        description?: string;
+      }) => {
         const id = crypto.randomUUID();
-        const baseSlug = input.slug?.trim() || input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant";
+        const baseSlug =
+          input.slug?.trim() ||
+          input.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "") ||
+          "restaurant";
         const slug = `${baseSlug}-${id.replace(/-/g, "").slice(0, 6)}`;
 
         const { error } = await supabase.from("restaurants").insert({
@@ -116,7 +131,9 @@ export function usePlatformRestaurantMutations() {
         });
         if (error) {
           if (error.code === "42501") {
-            throw new Error("Restaurants must be registered via the Owner Registration flow (/register) to establish authentic owner credentials.");
+            throw new Error(
+              "Restaurants must be registered via the Owner Registration flow (/register) to establish authentic owner credentials.",
+            );
           }
           throw error;
         }
@@ -125,7 +142,14 @@ export function usePlatformRestaurantMutations() {
     }),
 
     edit: useMutation({
-      mutationFn: async (input: { id: string; name: string; phone?: string; email?: string; address?: string; description?: string }) => {
+      mutationFn: async (input: {
+        id: string;
+        name: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+        description?: string;
+      }) => {
         await adminEditRestaurantServer({ data: input });
       },
       onSuccess: invalidate,

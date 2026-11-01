@@ -38,7 +38,8 @@ export function ConsultationSection() {
             Let's Build a <span className="text-emerald-600">Smarter Restaurant</span>
           </h2>
           <p className="mt-4 text-base sm:text-lg text-stone-600 leading-relaxed">
-            Every restaurant is different. Connect with us to discover the right solution for your business.
+            Every restaurant is different. Connect with us to discover the right solution for your
+            business.
           </p>
         </div>
 
@@ -58,9 +59,7 @@ export function ConsultationSection() {
                   <h3 className="font-display text-lg font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">
                     {opt.title}
                   </h3>
-                  <p className="mt-2 text-sm text-stone-600 leading-relaxed">
-                    {opt.desc}
-                  </p>
+                  <p className="mt-2 text-sm text-stone-600 leading-relaxed">{opt.desc}</p>
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-stone-200/60">

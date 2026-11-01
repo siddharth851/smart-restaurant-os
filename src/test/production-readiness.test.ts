@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  hasAnyRole, 
-  homeForRoles, 
-  PANEL_ROLES, 
-  SUPER_ADMIN_EMAIL, 
+import {
+  hasAnyRole,
+  homeForRoles,
+  PANEL_ROLES,
+  SUPER_ADMIN_EMAIL,
   SUPER_ADMIN_ID,
   setLocalSession,
-  getLocalSession
+  getLocalSession,
 } from "@/lib/auth";
 import { placeOrder, publicMenuQuery, menuUrl } from "@/lib/restaurant-api";
 import { nextStatus, trackOrderQuery } from "@/lib/orders-api";
@@ -17,7 +17,7 @@ describe("Production Readiness Audit", () => {
   it("Audit 1: Super Admin credentials and role assignment (no hardcoded passwords)", () => {
     expect(SUPER_ADMIN_EMAIL).toBe("admin@smartrestaurantos.com");
     // Verify VITE_SUPER_ADMIN_PASSWORD is completely removed from frontend environment
-    expect((import.meta.env as any).VITE_SUPER_ADMIN_PASSWORD).toBeUndefined();
+    expect((import.meta.env as Record<string, unknown>).VITE_SUPER_ADMIN_PASSWORD).toBeUndefined();
     // Super admin role access
     expect(hasAnyRole(["super_admin"], [...PANEL_ROLES.superAdmin])).toBe(true);
     expect(homeForRoles(["super_admin"])).toBe("/super-admin");
@@ -28,7 +28,7 @@ describe("Production Readiness Audit", () => {
     // Only restaurant_owner role is ever assigned to public registrants
     const registrantRoles = ["restaurant_owner"] as const;
     expect(hasAnyRole([...registrantRoles], [...PANEL_ROLES.superAdmin])).toBe(false);
-    expect(registrantRoles.includes("super_admin" as any)).toBe(false);
+    expect((registrantRoles as readonly string[]).includes("super_admin")).toBe(false);
   });
 
   // 3. Simplified roles: Exactly 3 user experiences (Super Admin, Restaurant Owner, Customer)
@@ -74,7 +74,10 @@ describe("Production Readiness Audit", () => {
     const { data: rest } = await supabase.from("restaurants").select("id, slug").limit(1).single();
     expect(rest).toBeDefined();
 
-    const { data: items } = await supabase.from("menu_items").select("id, name, price, is_available").eq("restaurant_id", rest!.id);
+    const { data: items } = await supabase
+      .from("menu_items")
+      .select("id, name, price, is_available")
+      .eq("restaurant_id", rest!.id);
     const availableItem = items?.find((i) => i.is_available);
 
     if (availableItem) {
@@ -112,7 +115,10 @@ describe("Production Readiness Audit", () => {
 
   // 7. Supabase RLS and tenant isolation using two separate restaurants
   it("Audit 7: Two separate restaurants have strict tenant isolation", async () => {
-    const { data: restaurants } = await supabase.from("restaurants").select("id, name, slug").limit(2);
+    const { data: restaurants } = await supabase
+      .from("restaurants")
+      .select("id, name, slug")
+      .limit(2);
     expect(restaurants).toBeDefined();
 
     if (restaurants && restaurants.length >= 2) {
@@ -120,8 +126,14 @@ describe("Production Readiness Audit", () => {
       expect(restA.id).not.toBe(restB.id);
 
       // Menu items are strictly partitioned by restaurant_id
-      const { data: itemsA } = await supabase.from("menu_items").select("id, restaurant_id").eq("restaurant_id", restA.id);
-      const { data: itemsB } = await supabase.from("menu_items").select("id, restaurant_id").eq("restaurant_id", restB.id);
+      const { data: itemsA } = await supabase
+        .from("menu_items")
+        .select("id, restaurant_id")
+        .eq("restaurant_id", restA.id);
+      const { data: itemsB } = await supabase
+        .from("menu_items")
+        .select("id, restaurant_id")
+        .eq("restaurant_id", restB.id);
 
       itemsA?.forEach((item) => expect(item.restaurant_id).toBe(restA.id));
       itemsB?.forEach((item) => expect(item.restaurant_id).toBe(restB.id));
@@ -133,7 +145,10 @@ describe("Production Readiness Audit", () => {
       });
 
       // Anonymous / cross-tenant update attempts are blocked by RLS
-      const { data: updateRes } = await supabase.from("restaurants").update({ name: "CrossTenantTamper" }).eq("id", restB.id);
+      const { data: updateRes } = await supabase
+        .from("restaurants")
+        .update({ name: "CrossTenantTamper" })
+        .eq("id", restB.id);
       expect(updateRes).toBeNull();
     }
   });
@@ -153,6 +168,6 @@ describe("Production Readiness Audit", () => {
     const pubKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     // Ensure service_role secret key is NOT in public env
     expect(pubKey).not.toContain("service_role");
-    expect((import.meta.env as any).SUPABASE_SERVICE_ROLE_KEY).toBeUndefined();
+    expect((import.meta.env as Record<string, unknown>).SUPABASE_SERVICE_ROLE_KEY).toBeUndefined();
   });
 });

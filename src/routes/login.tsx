@@ -8,7 +8,10 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Restaurant Owner Login — Smart Restaurant OS" },
-      { name: "description", content: "Sign in to manage your restaurant's orders, menu and tables." },
+      {
+        name: "description",
+        content: "Sign in to manage your restaurant's orders, menu and tables.",
+      },
       { property: "og:title", content: "Owner Login — Smart Restaurant OS" },
       { property: "og:description", content: "Sign in to your restaurant dashboard." },
     ],
@@ -24,7 +27,12 @@ function OwnerLogin() {
       title="Welcome back"
       subtitle="Sign in to your restaurant dashboard."
       footer={
-        <p>New to Smart Restaurant OS? <Link to="/register" className="font-semibold text-primary">Register your restaurant</Link></p>
+        <p>
+          New to Smart Restaurant OS?{" "}
+          <Link to="/register" className="font-semibold text-primary">
+            Register your restaurant
+          </Link>
+        </p>
       }
     >
       <LoginForm

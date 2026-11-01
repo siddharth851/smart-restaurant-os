@@ -21,7 +21,8 @@ export function FinalCtaSection() {
           Ready to Transform Your Restaurant?
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-base sm:text-lg text-stone-300 leading-relaxed">
-          Join hundreds of restaurant owners who are already serving smarter with DineOS. Cut wait times, eliminate order errors, and boost table turnover today.
+          Join hundreds of restaurant owners who are already serving smarter with DineOS. Cut wait
+          times, eliminate order errors, and boost table turnover today.
         </p>
 
         {/* CTA Buttons */}

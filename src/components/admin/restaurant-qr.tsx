@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 
 /** One QR per restaurant, linking to /menu/{slug}. Customers enter their table number on the menu. */
 export function RestaurantQrCard() {
-  return <WithOwnerRestaurant>{(r) => <QrInner slug={r.slug} name={r.name} />}</WithOwnerRestaurant>;
+  return (
+    <WithOwnerRestaurant>{(r) => <QrInner slug={r.slug} name={r.name} />}</WithOwnerRestaurant>
+  );
 }
 
 function QrInner({ slug, name }: { slug: string; name: string }) {
@@ -63,11 +65,10 @@ function QrInner({ slug, name }: { slug: string; name: string }) {
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200/60 mb-2">
             <Sparkles className="h-3 w-3" /> Digital Table Stand QR
           </div>
-          <h2 className="font-display text-xl font-bold text-stone-900">
-            {name} Public Menu QR
-          </h2>
+          <h2 className="font-display text-xl font-bold text-stone-900">{name} Public Menu QR</h2>
           <p className="text-xs sm:text-sm text-stone-500 leading-relaxed mt-1">
-            Print this single QR code for your tabletop acrylic stands. Guests scan it with their phone camera, enter their table number, and order instantly.
+            Print this single QR code for your tabletop acrylic stands. Guests scan it with their
+            phone camera, enter their table number, and order instantly.
           </p>
         </div>
 
@@ -77,7 +78,9 @@ function QrInner({ slug, name }: { slug: string; name: string }) {
           </p>
           <button
             onClick={() =>
-              navigator.clipboard.writeText(url).then(() => toast.success("Menu URL copied to clipboard"))
+              navigator.clipboard
+                .writeText(url)
+                .then(() => toast.success("Menu URL copied to clipboard"))
             }
             className="shrink-0 p-1 rounded-md text-stone-500 hover:text-stone-900 hover:bg-stone-200/70 transition-colors"
             title="Copy URL"

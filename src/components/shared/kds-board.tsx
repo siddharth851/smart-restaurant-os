@@ -17,15 +17,33 @@ import {
 import { cn } from "@/lib/utils";
 
 const columns: { key: OrderStatus; accent: string; badge: string }[] = [
-  { key: "received", accent: "border-t-blue-500", badge: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
-  { key: "accepted", accent: "border-t-indigo-500", badge: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30" },
-  { key: "preparing", accent: "border-t-amber-500", badge: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
-  { key: "ready", accent: "border-t-emerald-500", badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+  {
+    key: "received",
+    accent: "border-t-blue-500",
+    badge: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  },
+  {
+    key: "accepted",
+    accent: "border-t-indigo-500",
+    badge: "bg-indigo-500/15 text-indigo-400 border-indigo-500/30",
+  },
+  {
+    key: "preparing",
+    accent: "border-t-amber-500",
+    badge: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  },
+  {
+    key: "ready",
+    accent: "border-t-emerald-500",
+    badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  },
 ];
 
 /** Live kitchen board for the signed-in owner's restaurant. */
 export function KdsBoard({ dark = false }: { dark?: boolean }) {
-  return <WithOwnerRestaurant>{(r) => <Board restaurantId={r.id} dark={dark} />}</WithOwnerRestaurant>;
+  return (
+    <WithOwnerRestaurant>{(r) => <Board restaurantId={r.id} dark={dark} />}</WithOwnerRestaurant>
+  );
 }
 
 function Board({ restaurantId, dark }: { restaurantId: string; dark: boolean }) {
@@ -113,10 +131,7 @@ function Board({ restaurantId, dark }: { restaurantId: string; dark: boolean }) 
                   </h2>
                 </div>
                 <span
-                  className={cn(
-                    "rounded-full px-2.5 py-0.5 text-xs font-bold border",
-                    col.badge,
-                  )}
+                  className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold border", col.badge)}
                 >
                   {list.length}
                 </span>
@@ -172,9 +187,7 @@ function Board({ restaurantId, dark }: { restaurantId: string; dark: boolean }) 
                             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-500/20 text-emerald-400 text-xs font-extrabold border border-emerald-500/30">
                               {it.qty}
                             </span>
-                            <span className="font-bold text-white leading-tight">
-                              {it.name}
-                            </span>
+                            <span className="font-bold text-white leading-tight">{it.name}</span>
                           </li>
                         ))}
                       </ul>

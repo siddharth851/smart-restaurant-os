@@ -15,7 +15,12 @@ export const registerSchema = z
   .object({
     ownerName: z.string().trim().min(2, "Your name is required").max(100),
     restaurantName: z.string().trim().min(2, "Restaurant name is required").max(120),
-    email: z.string().trim().min(1, "Restaurant email is required").email("Enter a valid email").max(255),
+    email: z
+      .string()
+      .trim()
+      .min(1, "Restaurant email is required")
+      .email("Enter a valid email")
+      .max(255),
     password: z
       .string()
       .min(8, "At least 8 characters")
@@ -33,7 +38,10 @@ export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
       { title: "Register Your Restaurant — Smart Restaurant OS" },
-      { name: "description", content: "Create your restaurant account and start taking QR orders." },
+      {
+        name: "description",
+        content: "Create your restaurant account and start taking QR orders.",
+      },
       { property: "og:title", content: "Register — Smart Restaurant OS" },
       { property: "og:description", content: "Set up QR ordering for your restaurant." },
     ],
@@ -42,11 +50,41 @@ export const Route = createFileRoute("/register")({
 });
 
 const fields = [
-  { name: "ownerName", label: "Owner Name", type: "text", auto: "name", placeholder: "e.g. Priya Sharma" },
-  { name: "restaurantName", label: "Restaurant Name", type: "text", auto: "organization", placeholder: "e.g. Saffron Bistro" },
-  { name: "email", label: "Restaurant Email", type: "email", auto: "email", placeholder: "e.g. owner@saffronbistro.com" },
-  { name: "password", label: "Password", type: "password", auto: "new-password", placeholder: "Min. 8 characters with letter & number" },
-  { name: "confirmPassword", label: "Confirm Password", type: "password", auto: "new-password", placeholder: "Re-enter password" },
+  {
+    name: "ownerName",
+    label: "Owner Name",
+    type: "text",
+    auto: "name",
+    placeholder: "e.g. Priya Sharma",
+  },
+  {
+    name: "restaurantName",
+    label: "Restaurant Name",
+    type: "text",
+    auto: "organization",
+    placeholder: "e.g. Saffron Bistro",
+  },
+  {
+    name: "email",
+    label: "Restaurant Email",
+    type: "email",
+    auto: "email",
+    placeholder: "e.g. owner@saffronbistro.com",
+  },
+  {
+    name: "password",
+    label: "Password",
+    type: "password",
+    auto: "new-password",
+    placeholder: "Min. 8 characters with letter & number",
+  },
+  {
+    name: "confirmPassword",
+    label: "Confirm Password",
+    type: "password",
+    auto: "new-password",
+    placeholder: "Re-enter password",
+  },
 ] as const;
 
 function Register() {
@@ -59,7 +97,9 @@ function Register() {
     e.preventDefault();
     setFormError(null);
     const fd = new FormData(e.currentTarget);
-    const parsed = registerSchema.safeParse(Object.fromEntries(fields.map((f) => [f.name, fd.get(f.name) ?? ""])));
+    const parsed = registerSchema.safeParse(
+      Object.fromEntries(fields.map((f) => [f.name, fd.get(f.name) ?? ""])),
+    );
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
       return;
@@ -70,7 +110,9 @@ function Register() {
 
     try {
       if (d.email.trim().toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
-        throw new Error("This email is reserved for platform administration. Please sign in via the admin portal.");
+        throw new Error(
+          "This email is reserved for platform administration. Please sign in via the admin portal.",
+        );
       }
 
       // 1. Create account via Supabase Auth
@@ -150,7 +192,14 @@ function Register() {
       eyebrow="Get started"
       title="Register your restaurant"
       subtitle="Set up your account in under a minute. Start taking QR orders immediately."
-      footer={<p>Already registered? <Link to="/login" className="font-semibold text-primary">Sign in</Link></p>}
+      footer={
+        <p>
+          Already registered?{" "}
+          <Link to="/login" className="font-semibold text-primary">
+            Sign in
+          </Link>
+        </p>
+      }
     >
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         {formError && <FormAlert tone="error">{formError}</FormAlert>}
@@ -158,13 +207,13 @@ function Register() {
           {fields.map((f) => (
             <div key={f.name}>
               <Label htmlFor={f.name}>{f.label}</Label>
-              <Input 
-                id={f.name} 
-                name={f.name} 
-                type={f.type} 
-                autoComplete={f.auto} 
-                className="mt-2 h-12" 
-                aria-invalid={!!errors[f.name]} 
+              <Input
+                id={f.name}
+                name={f.name}
+                type={f.type}
+                autoComplete={f.auto}
+                className="mt-2 h-12"
+                aria-invalid={!!errors[f.name]}
                 placeholder={f.placeholder}
               />
               <FieldError message={errors[f.name]} />

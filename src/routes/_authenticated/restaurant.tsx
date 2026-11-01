@@ -1,6 +1,17 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { hasAnyRole, PANEL_ROLES, ROLE_LABEL } from "@/lib/auth";
-import { BarChart3, ChefHat, ClipboardList, LayoutDashboard, LayoutGrid, QrCode, Settings, Tags, Users, UtensilsCrossed } from "lucide-react";
+import {
+  BarChart3,
+  ChefHat,
+  ClipboardList,
+  LayoutDashboard,
+  LayoutGrid,
+  QrCode,
+  Settings,
+  Tags,
+  Users,
+  UtensilsCrossed,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { myRestaurantQuery } from "@/lib/restaurant-api";
 import { PanelShell, type NavItem } from "@/components/shared/panel-shell";
@@ -21,13 +32,20 @@ export const Route = createFileRoute("/_authenticated/restaurant")({
   head: () => ({
     meta: [
       { title: `${restaurant.name} Admin — Smart Restaurant OS` },
-      { name: "description", content: "Manage orders, menu, tables and settings for your restaurant." },
+      {
+        name: "description",
+        content: "Manage orders, menu, tables and settings for your restaurant.",
+      },
       { property: "og:title", content: "Restaurant Admin — Smart Restaurant OS" },
-      { property: "og:description", content: "Run your restaurant's QR ordering from one dashboard." },
+      {
+        property: "og:description",
+        content: "Run your restaurant's QR ordering from one dashboard.",
+      },
     ],
   }),
   beforeLoad: ({ context }) => {
-    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.restaurant])) throw redirect({ to: "/unauthorized" });
+    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.restaurant]))
+      throw redirect({ to: "/unauthorized" });
   },
   component: RestaurantLayout,
 });
@@ -43,7 +61,10 @@ function RestaurantLayout() {
       nav={nav}
       user={{ name: auth.name, role: "Restaurant Owner" }}
       footer={
-        <a href="/kitchen" className="flex items-center gap-2 rounded-lg bg-sidebar-accent px-3 py-2.5 text-xs font-semibold text-sidebar-accent-foreground">
+        <a
+          href="/kitchen"
+          className="flex items-center gap-2 rounded-lg bg-sidebar-accent px-3 py-2.5 text-xs font-semibold text-sidebar-accent-foreground"
+        >
           <LayoutGrid className="h-4 w-4" /> Open full-screen kitchen
         </a>
       }

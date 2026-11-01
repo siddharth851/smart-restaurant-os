@@ -5,14 +5,14 @@ import { verifySuperAdminCredentials } from "@/lib/admin.server";
 
 describe("Security Audit — Super Admin Authentication", () => {
   it("Security 1: VITE_SUPER_ADMIN_PASSWORD is not present in frontend env", () => {
-    expect((import.meta.env as any).VITE_SUPER_ADMIN_PASSWORD).toBeUndefined();
+    expect((import.meta.env as Record<string, unknown>).VITE_SUPER_ADMIN_PASSWORD).toBeUndefined();
   });
 
   it("Security 2: Client auth info never grants super_admin via email spoofing", async () => {
     // Calling loadAuthInfo without a valid authenticated user session must never return super_admin
     const info = await loadAuthInfo();
     if (info) {
-      expect(info.roles.includes("super_admin" as any)).toBe(false);
+      expect(info.roles.includes("super_admin")).toBe(false);
     } else {
       expect(info).toBeNull();
     }

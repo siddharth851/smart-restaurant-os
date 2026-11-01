@@ -10,13 +10,15 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/restaurant/tables")({
   component: () => (
-    <WithOwnerRestaurant>
-      {(r) => <TablesManager restaurant={r} />}
-    </WithOwnerRestaurant>
+    <WithOwnerRestaurant>{(r) => <TablesManager restaurant={r} />}</WithOwnerRestaurant>
   ),
 });
 
-function TablesManager({ restaurant: r }: { restaurant: { id: string; name: string; slug: string } }) {
+function TablesManager({
+  restaurant: r,
+}: {
+  restaurant: { id: string; name: string; slug: string };
+}) {
   const [tableCount, setTableCount] = useState(8);
   const [copiedTable, setCopiedTable] = useState<number | null>(null);
 
@@ -45,7 +47,7 @@ function TablesManager({ restaurant: r }: { restaurant: { id: string; name: stri
         title="Table & QR Management"
         description="Print and deploy dynamic QR code table stands for contactless customer ordering."
         actions={
-          <Button 
+          <Button
             onClick={addTable}
             className="rounded-xl bg-forest hover:bg-forest/90 text-white font-bold shadow-xs transition-all"
           >
@@ -64,7 +66,8 @@ function TablesManager({ restaurant: r }: { restaurant: { id: string; name: stri
             Dining Floor Table Stands
           </h2>
           <p className="text-xs text-muted-foreground">
-            {tablesList.length} tables active. Each table QR automatically identifies the diner's table number.
+            {tablesList.length} tables active. Each table QR automatically identifies the diner's
+            table number.
           </p>
         </div>
       </div>
@@ -96,7 +99,10 @@ function TablesManager({ restaurant: r }: { restaurant: { id: string; name: stri
 
                 {/* QR Preview Box */}
                 <div className="my-4 flex aspect-square items-center justify-center rounded-2xl bg-muted/40 border border-border/60 group-hover:bg-forest/5 group-hover:border-forest/20 transition-colors relative overflow-hidden">
-                  <QrCode className="h-20 w-20 text-foreground group-hover:text-forest transition-colors" strokeWidth={1.25} />
+                  <QrCode
+                    className="h-20 w-20 text-foreground group-hover:text-forest transition-colors"
+                    strokeWidth={1.25}
+                  />
                   <a
                     href={directUrl}
                     target="_blank"
@@ -126,7 +132,11 @@ function TablesManager({ restaurant: r }: { restaurant: { id: string; name: stri
                   onClick={() => copyTableLink(t.number)}
                   className="w-full h-8 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5"
                 >
-                  {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  {isCopied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                   <span>{isCopied ? "Link Copied!" : "Copy Table Link"}</span>
                 </Button>
               </div>

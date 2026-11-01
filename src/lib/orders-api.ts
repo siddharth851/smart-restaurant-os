@@ -44,7 +44,9 @@ export const restaurantOrdersQuery = (restaurantId: string) =>
     queryFn: async (): Promise<KitchenOrder[]> => {
       const { data, error } = await supabase
         .from("orders")
-        .select("id, order_code, table_number, customer_name, notes, total, status, created_at, order_items(id, name, quantity, unit_price)")
+        .select(
+          "id, order_code, table_number, customer_name, notes, total, status, created_at, order_items(id, name, quantity, unit_price)",
+        )
         .eq("restaurant_id", restaurantId)
         .order("created_at", { ascending: false })
         .limit(200);
@@ -63,11 +65,11 @@ export const restaurantOrdersQuery = (restaurantId: string) =>
         total: Number(o.total),
         status: o.status as OrderStatus,
         createdAt: o.created_at,
-        items: (o.order_items ?? []).map((i) => ({ 
-          id: i.id, 
-          name: i.name, 
-          qty: i.quantity, 
-          price: Number(i.unit_price) 
+        items: (o.order_items ?? []).map((i) => ({
+          id: i.id,
+          name: i.name,
+          qty: i.quantity,
+          price: Number(i.unit_price),
         })),
       }));
     },
@@ -79,11 +81,22 @@ export function useOrdersRealtime(restaurantId: string) {
   useEffect(() => {
     const channel = supabase
       .channel(`orders-${restaurantId}-${Math.random().toString(36).slice(2)}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurantId}` }, () => {
-        qc.invalidateQueries({ queryKey: ["orders", restaurantId] });
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["orders", restaurantId] });
+        },
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [restaurantId, qc]);
 }
 
@@ -91,16 +104,23 @@ export function useUpdateOrderStatus(restaurantId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: OrderStatus }) => {
-      const { error } = await supabase.rpc("update_order_status", { _order_id: id, _status: status });
+      const { error } = await supabase.rpc("update_order_status", {
+        _order_id: id,
+        _status: status,
+      });
       if (error) throw new Error(error.message);
     },
     onMutate: async ({ id, status }) => {
       await qc.cancelQueries({ queryKey: ["orders", restaurantId] });
       const prev = qc.getQueryData<KitchenOrder[]>(["orders", restaurantId]);
-      qc.setQueryData<KitchenOrder[]>(["orders", restaurantId], (l) => l?.map((o) => (o.id === id ? { ...o, status } : o)));
+      qc.setQueryData<KitchenOrder[]>(["orders", restaurantId], (l) =>
+        l?.map((o) => (o.id === id ? { ...o, status } : o)),
+      );
       return { prev };
     },
-    onError: (_e, _v, ctx) => { if (ctx?.prev) qc.setQueryData(["orders", restaurantId], ctx.prev); },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.prev) qc.setQueryData(["orders", restaurantId], ctx.prev);
+    },
     onSettled: () => qc.invalidateQueries({ queryKey: ["orders", restaurantId] }),
   });
 }
@@ -129,7 +149,18 @@ export const trackOrderQuery = (code: string) =>
       const { data, error } = await supabase.rpc("get_order_status", { _code: code });
       if (error) throw error;
       if (!data) return null;
-      const d = data as { order_code: string; status: string; table_number: number; customer_name: string; notes: string | null; total: number; created_at: string; restaurant_name: string; slug: string; items: { name: string; qty: number; price: number }[] };
+      const d = data as {
+        order_code: string;
+        status: string;
+        table_number: number;
+        customer_name: string;
+        notes: string | null;
+        total: number;
+        created_at: string;
+        restaurant_name: string;
+        slug: string;
+        items: { name: string; qty: number; price: number }[];
+      };
       return {
         code: String(d.order_code),
         status: d.status as OrderStatus,
@@ -140,7 +171,11 @@ export const trackOrderQuery = (code: string) =>
         createdAt: String(d.created_at),
         restaurantName: String(d.restaurant_name),
         slug: String(d.slug),
-        items: (d.items ?? []).map((i) => ({ name: i.name, qty: Number(i.qty), price: Number(i.price) })),
+        items: (d.items ?? []).map((i) => ({
+          name: i.name,
+          qty: Number(i.qty),
+          price: Number(i.price),
+        })),
       };
     },
   });

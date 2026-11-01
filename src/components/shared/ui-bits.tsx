@@ -40,7 +40,12 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-3xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-xs", className)}>
+    <section
+      className={cn(
+        "rounded-3xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-xs",
+        className,
+      )}
+    >
       {title && (
         <div className="mb-5 flex items-center justify-between gap-3 pb-3 border-b border-stone-100">
           <h2 className="font-display text-base font-bold text-stone-900">{title}</h2>
@@ -101,14 +106,38 @@ export function StatCard({
 const statusThemes: Record<string, { bg: string; text: string; dot: string }> = {
   new: { bg: "bg-blue-50 border-blue-200/80", text: "text-blue-700", dot: "bg-blue-500" },
   received: { bg: "bg-blue-50 border-blue-200/80", text: "text-blue-700", dot: "bg-blue-500" },
-  accepted: { bg: "bg-indigo-50 border-indigo-200/80", text: "text-indigo-700", dot: "bg-indigo-500" },
-  preparing: { bg: "bg-amber-50 border-amber-200/80", text: "text-amber-800", dot: "bg-amber-500 animate-pulse" },
-  ready: { bg: "bg-emerald-50 border-emerald-200/80", text: "text-emerald-700", dot: "bg-emerald-500" },
+  accepted: {
+    bg: "bg-indigo-50 border-indigo-200/80",
+    text: "text-indigo-700",
+    dot: "bg-indigo-500",
+  },
+  preparing: {
+    bg: "bg-amber-50 border-amber-200/80",
+    text: "text-amber-800",
+    dot: "bg-amber-500 animate-pulse",
+  },
+  ready: {
+    bg: "bg-emerald-50 border-emerald-200/80",
+    text: "text-emerald-700",
+    dot: "bg-emerald-500",
+  },
   served: { bg: "bg-stone-100 border-stone-200", text: "text-stone-600", dot: "bg-stone-400" },
-  available: { bg: "bg-emerald-50 border-emerald-200/80", text: "text-emerald-700", dot: "bg-emerald-500" },
+  available: {
+    bg: "bg-emerald-50 border-emerald-200/80",
+    text: "text-emerald-700",
+    dot: "bg-emerald-500",
+  },
   occupied: { bg: "bg-amber-50 border-amber-200/80", text: "text-amber-800", dot: "bg-amber-500" },
-  reserved: { bg: "bg-purple-50 border-purple-200/80", text: "text-purple-700", dot: "bg-purple-500" },
-  active: { bg: "bg-emerald-50 border-emerald-200/80", text: "text-emerald-700", dot: "bg-emerald-500" },
+  reserved: {
+    bg: "bg-purple-50 border-purple-200/80",
+    text: "text-purple-700",
+    dot: "bg-purple-500",
+  },
+  active: {
+    bg: "bg-emerald-50 border-emerald-200/80",
+    text: "text-emerald-700",
+    dot: "bg-emerald-500",
+  },
   trial: { bg: "bg-sky-50 border-sky-200/80", text: "text-sky-700", dot: "bg-sky-500" },
   suspended: { bg: "bg-rose-50 border-rose-200/80", text: "text-rose-700", dot: "bg-rose-500" },
   "on leave": { bg: "bg-stone-100 border-stone-200", text: "text-stone-600", dot: "bg-stone-400" },

@@ -43,7 +43,10 @@ function HomePage() {
   ];
 
   return (
-    <div id="home" className="min-h-screen bg-stone-950 text-stone-100 overflow-x-hidden selection:bg-emerald-500 selection:text-stone-950">
+    <div
+      id="home"
+      className="min-h-screen bg-stone-950 text-stone-100 overflow-x-hidden selection:bg-emerald-500 selection:text-stone-950"
+    >
       {/* 1. Sticky Navigation */}
       <Navbar onOpenDemo={() => setDemoOpen(true)} />
 
@@ -85,7 +88,8 @@ function HomePage() {
 
               {/* Description */}
               <p className="mt-6 max-w-xl text-base sm:text-lg text-stone-300 leading-relaxed">
-                Modern QR menu, real-time kitchen updates, and powerful restaurant management — all in one simple platform.
+                Modern QR menu, real-time kitchen updates, and powerful restaurant management — all
+                in one simple platform.
               </p>
 
               {/* Action Buttons */}
@@ -121,9 +125,7 @@ function HomePage() {
                         <p className="font-display text-lg sm:text-xl font-extrabold text-white leading-tight">
                           {s.value}
                         </p>
-                        <p className="text-[11px] font-medium text-stone-400">
-                          {s.label}
-                        </p>
+                        <p className="text-[11px] font-medium text-stone-400">{s.label}</p>
                       </div>
                     </div>
                   );
@@ -150,9 +152,7 @@ function HomePage() {
                     <p className="font-display text-base font-extrabold text-white leading-tight">
                       {s.value}
                     </p>
-                    <p className="text-[10px] font-medium text-stone-400">
-                      {s.label}
-                    </p>
+                    <p className="text-[10px] font-medium text-stone-400">{s.label}</p>
                   </div>
                 </div>
               );

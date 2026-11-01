@@ -42,9 +42,7 @@ export async function confirmUnconfirmedAccount(email: string) {
       return { ok: false, error: listError.message };
     }
 
-    const targetUser = usersData.users.find(
-      (u) => u.email?.toLowerCase() === cleanEmail
-    );
+    const targetUser = usersData.users.find((u) => u.email?.toLowerCase() === cleanEmail);
 
     if (!targetUser) {
       return { ok: false, error: "No Supabase user found with this email." };
@@ -58,7 +56,7 @@ export async function confirmUnconfirmedAccount(email: string) {
     // 3. Confirm the user safely via Admin API
     const { data: updated, error: updateError } = await adminClient.auth.admin.updateUserById(
       targetUser.id,
-      { email_confirm: true }
+      { email_confirm: true },
     );
 
     if (updateError) {

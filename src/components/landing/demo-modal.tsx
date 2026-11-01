@@ -59,7 +59,8 @@ export function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
             Explore All 3 Experiences
           </h3>
           <p className="mt-1 text-sm text-stone-400">
-            Smart Restaurant OS is fully integrated. Select any experience below to explore the live system.
+            Smart Restaurant OS is fully integrated. Select any experience below to explore the live
+            system.
           </p>
         </div>
 
@@ -86,9 +87,7 @@ export function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                   <h4 className="font-display text-base font-bold text-white group-hover:text-amber-300 transition-colors">
                     {p.title}
                   </h4>
-                  <p className="mt-1.5 text-xs text-stone-300/80 leading-relaxed">
-                    {p.desc}
-                  </p>
+                  <p className="mt-1.5 text-xs text-stone-300/80 leading-relaxed">{p.desc}</p>
                 </div>
 
                 <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">

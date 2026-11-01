@@ -111,7 +111,8 @@
   --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
   --gradient-forest: linear-gradient(160deg, var(--forest), oklch(0.24 0.04 170));
   --gradient-cover: linear-gradient(to top, oklch(0.18 0.03 170 / 0.85), transparent 65%);
-  --shadow-soft: 0 1px 2px oklch(0.27 0.045 170 / 0.04), 0 4px 16px -4px oklch(0.27 0.045 170 / 0.08);
+  --shadow-soft:
+    0 1px 2px oklch(0.27 0.045 170 / 0.04), 0 4px 16px -4px oklch(0.27 0.045 170 / 0.08);
   --shadow-elevated: 0 12px 40px -12px oklch(0.32 0.045 170 / 0.25);
 }
 
@@ -133,10 +134,21 @@
   --shadow-elevated: var(--shadow-elevated);
 }
 
-@utility bg-gradient-primary { background-image: var(--gradient-primary); }
-@utility bg-gradient-forest { background-image: var(--gradient-forest); }
-@utility bg-gradient-cover { background-image: var(--gradient-cover); }
-@utility no-scrollbar { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+@utility bg-gradient-primary {
+  background-image: var(--gradient-primary);
+}
+@utility bg-gradient-forest {
+  background-image: var(--gradient-forest);
+}
+@utility bg-gradient-cover {
+  background-image: var(--gradient-cover);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 @layer base {
   html {
@@ -154,5 +166,11 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
 }

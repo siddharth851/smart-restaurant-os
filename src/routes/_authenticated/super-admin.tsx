@@ -11,14 +11,18 @@ export const Route = createFileRoute("/_authenticated/super-admin")({
   head: () => ({
     meta: [
       { title: "Super Admin Panel — Smart Restaurant OS" },
-      { name: "description", content: "Super Admin console for platform owner to manage all restaurants." },
+      {
+        name: "description",
+        content: "Super Admin console for platform owner to manage all restaurants.",
+      },
       { property: "og:title", content: "Super Admin Panel — Smart Restaurant OS" },
       { property: "og:description", content: "Oversee and manage all restaurants." },
       { name: "robots", content: "noindex" },
     ],
   }),
   beforeLoad: ({ context }) => {
-    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.superAdmin])) throw redirect({ to: "/unauthorized" });
+    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.superAdmin]))
+      throw redirect({ to: "/unauthorized" });
   },
   component: SuperAdminLayout,
 });

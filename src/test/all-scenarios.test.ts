@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  hasAnyRole, 
-  homeForRoles, 
-  PANEL_ROLES, 
-  SUPER_ADMIN_EMAIL, 
+import {
+  hasAnyRole,
+  homeForRoles,
+  PANEL_ROLES,
+  SUPER_ADMIN_EMAIL,
   SUPER_ADMIN_ID,
   setLocalSession,
-  getLocalSession
+  getLocalSession,
 } from "@/lib/auth";
 import { placeOrder, publicMenuQuery, menuUrl } from "@/lib/restaurant-api";
 import { nextStatus, trackOrderQuery, restaurantOrdersQuery } from "@/lib/orders-api";
@@ -43,7 +43,7 @@ describe("Scenario Testing — Smart Restaurant OS", () => {
         table: 2,
         notes: "",
         lines: [{ id: "00000000-0000-0000-0000-000000000000", qty: 1 }],
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -71,7 +71,10 @@ describe("Scenario Testing — Smart Restaurant OS", () => {
     const { data: rest } = await supabase.from("restaurants").select("id, slug").limit(1).single();
     expect(rest).toBeDefined();
 
-    const { data: items } = await supabase.from("menu_items").select("id, name, price, is_available").eq("restaurant_id", rest!.id);
+    const { data: items } = await supabase
+      .from("menu_items")
+      .select("id, name, price, is_available")
+      .eq("restaurant_id", rest!.id);
     const availableItem = items?.find((i) => i.is_available);
 
     if (availableItem) {
@@ -117,7 +120,10 @@ describe("Scenario Testing — Smart Restaurant OS", () => {
       expect(rA.id).not.toBe(rB.id);
 
       // Menu items are strictly scoped to restaurant_id
-      const { data: itemsA } = await supabase.from("menu_items").select("restaurant_id").eq("restaurant_id", rA.id);
+      const { data: itemsA } = await supabase
+        .from("menu_items")
+        .select("restaurant_id")
+        .eq("restaurant_id", rA.id);
       itemsA?.forEach((item) => expect(item.restaurant_id).toBe(rA.id));
     }
   });

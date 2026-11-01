@@ -19,7 +19,10 @@ export function Navbar({ onOpenDemo }: { onOpenDemo?: () => void }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-18 items-center justify-between">
           {/* Brand Logo */}
-          <Link to="/" className="group flex items-center gap-2.5 transition-transform hover:scale-[1.02]">
+          <Link
+            to="/"
+            className="group flex items-center gap-2.5 transition-transform hover:scale-[1.02]"
+          >
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-md shadow-amber-500/20 text-stone-950">
               {/* Chef hat & dish stylized logo */}
               <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">

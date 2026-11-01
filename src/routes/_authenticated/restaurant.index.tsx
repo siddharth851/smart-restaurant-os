@@ -1,6 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ClipboardList, IndianRupee, QrCode, Timer, ExternalLink, ArrowRight, Utensils, Loader2 } from "lucide-react";
+import {
+  ClipboardList,
+  IndianRupee,
+  QrCode,
+  Timer,
+  ExternalLink,
+  ArrowRight,
+  Utensils,
+  Loader2,
+} from "lucide-react";
 import { BarChart, PageHeader, Panel, StatCard, StatusBadge } from "@/components/shared/ui-bits";
 import { formatINR } from "@/lib/demo-data";
 import { Button } from "@/components/ui/button";
@@ -8,7 +17,9 @@ import { WithOwnerRestaurant } from "@/components/admin/owner-restaurant";
 import { restaurantOrdersQuery, useOrdersRealtime, STATUS_LABEL } from "@/lib/orders-api";
 import { itemsQuery } from "@/lib/restaurant-api";
 
-export const Route = createFileRoute("/_authenticated/restaurant/")({ component: DashboardWrapper });
+export const Route = createFileRoute("/_authenticated/restaurant/")({
+  component: DashboardWrapper,
+});
 
 function DashboardWrapper() {
   return (
@@ -18,10 +29,10 @@ function DashboardWrapper() {
   );
 }
 
-function OwnerDashboardContent({ 
-  restaurant: r 
-}: { 
-  restaurant: { id: string; name: string; slug: string; logoSrc?: string | null }; 
+function OwnerDashboardContent({
+  restaurant: r,
+}: {
+  restaurant: { id: string; name: string; slug: string; logoSrc?: string | null };
   userId: string;
 }) {
   useOrdersRealtime(r.id);
@@ -30,23 +41,30 @@ function OwnerDashboardContent({
 
   const todayStr = new Date().toDateString();
   const todayOrders = orders.filter((o) => new Date(o.createdAt).toDateString() === todayStr);
-  const activeOrders = orders.filter((o) => ["received", "accepted", "preparing"].includes(o.status));
+  const activeOrders = orders.filter((o) =>
+    ["received", "accepted", "preparing"].includes(o.status),
+  );
   const todayRevenue = todayOrders.reduce((acc, o) => acc + o.total, 0);
 
   // Distinct occupied tables
   const occupiedTables = new Set(activeOrders.map((o) => o.table)).size;
 
   // Item sales map
-  const itemSales = orders.reduce((acc: Record<string, { name: string; count: number; total: number }>, o) => {
-    o.items.forEach((item) => {
-      if (!acc[item.name]) acc[item.name] = { name: item.name, count: 0, total: 0 };
-      acc[item.name].count += item.qty;
-      acc[item.name].total += item.price * item.qty;
-    });
-    return acc;
-  }, {});
+  const itemSales = orders.reduce(
+    (acc: Record<string, { name: string; count: number; total: number }>, o) => {
+      o.items.forEach((item) => {
+        if (!acc[item.name]) acc[item.name] = { name: item.name, count: 0, total: 0 };
+        acc[item.name].count += item.qty;
+        acc[item.name].total += item.price * item.qty;
+      });
+      return acc;
+    },
+    {},
+  );
 
-  const topItems = Object.values(itemSales).sort((a, b) => b.count - a.count).slice(0, 5);
+  const topItems = Object.values(itemSales)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   return (
     <>
@@ -70,40 +88,48 @@ function OwnerDashboardContent({
 
       {/* 4 Key Performance Metric Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard 
-          label="Today's Revenue" 
-          value={formatINR(todayRevenue)} 
-          delta={`${todayOrders.length} orders today`} 
-          icon={IndianRupee} 
+        <StatCard
+          label="Today's Revenue"
+          value={formatINR(todayRevenue)}
+          delta={`${todayOrders.length} orders today`}
+          icon={IndianRupee}
         />
-        <StatCard 
-          label="Active Kitchen Orders" 
-          value={String(activeOrders.length)} 
-          delta={activeOrders.length > 0 ? "In preparation line" : "Queue clear"} 
-          icon={ClipboardList} 
+        <StatCard
+          label="Active Kitchen Orders"
+          value={String(activeOrders.length)}
+          delta={activeOrders.length > 0 ? "In preparation line" : "Queue clear"}
+          icon={ClipboardList}
         />
-        <StatCard 
-          label="Occupied Tables" 
-          value={`${occupiedTables} active`} 
-          delta={occupiedTables > 0 ? "Diners seated" : "Tables ready"} 
-          icon={QrCode} 
+        <StatCard
+          label="Occupied Tables"
+          value={`${occupiedTables} active`}
+          delta={occupiedTables > 0 ? "Diners seated" : "Tables ready"}
+          icon={QrCode}
         />
-        <StatCard 
-          label="Live Menu Items" 
-          value={`${menuItems.length} dishes`} 
-          delta={`${menuItems.filter((m) => m.is_available).length} in stock`} 
-          icon={Timer} 
+        <StatCard
+          label="Live Menu Items"
+          value={`${menuItems.length} dishes`}
+          delta={`${menuItems.filter((m) => m.is_available).length} in stock`}
+          icon={Timer}
         />
       </div>
 
       {/* Charts & Top Dishes Grid */}
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
         <Panel title="Order Revenue Overview" className="lg:col-span-2">
-          <p className="text-xs text-muted-foreground mb-3">Gross dining orders processed across your dining room.</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Gross dining orders processed across your dining room.
+          </p>
           <BarChart
             data={[
               { label: "Today", value: Math.max(todayRevenue, 1) },
-              { label: "Total All-Time", value: Math.max(orders.reduce((a, b) => a + b.total, 0), 1) },
+              {
+                label: "Total All-Time",
+                value: Math.max(
+                  orders.reduce((a, b) => a + b.total, 0),
+                  1,
+                ),
+              },
             ]}
           />
         </Panel>
@@ -111,7 +137,10 @@ function OwnerDashboardContent({
         <Panel
           title="Top Selling Dishes"
           action={
-            <Link to="/restaurant/menu" className="text-xs font-bold text-forest hover:underline flex items-center gap-1">
+            <Link
+              to="/restaurant/menu"
+              className="text-xs font-bold text-forest hover:underline flex items-center gap-1"
+            >
               <span>Manage Menu</span>
               <ArrowRight className="h-3 w-3" />
             </Link>
@@ -125,7 +154,10 @@ function OwnerDashboardContent({
           ) : (
             <ul className="space-y-3">
               {topItems.map((item, i) => (
-                <li key={item.name} className="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors">
+                <li
+                  key={item.name}
+                  className="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors"
+                >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-forest/10 text-xs font-bold text-forest">
                       #{i + 1}
@@ -148,7 +180,10 @@ function OwnerDashboardContent({
         title="Live Dining Room Feed"
         className="mt-8"
         action={
-          <Link to="/restaurant/orders" className="text-xs font-bold text-forest hover:underline flex items-center gap-1">
+          <Link
+            to="/restaurant/orders"
+            className="text-xs font-bold text-forest hover:underline flex items-center gap-1"
+          >
             <span>View All Live Orders</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -166,7 +201,10 @@ function OwnerDashboardContent({
         ) : (
           <div className="divide-y divide-border/60">
             {orders.slice(0, 5).map((o) => (
-              <div key={o.id} className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0">
+              <div
+                key={o.id}
+                className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
+              >
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest text-forest-foreground font-display text-xs font-extrabold shadow-xs">
                     T{o.table}
@@ -174,7 +212,9 @@ function OwnerDashboardContent({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="text-xs font-bold text-foreground font-mono">{o.code}</p>
-                      <span className="text-[11px] text-muted-foreground font-medium">· {o.customerName}</span>
+                      <span className="text-[11px] text-muted-foreground font-medium">
+                        · {o.customerName}
+                      </span>
                     </div>
                     <p className="truncate text-xs text-muted-foreground mt-0.5">
                       {o.items.map((i) => `${i.qty}× ${i.name}`).join(", ")}

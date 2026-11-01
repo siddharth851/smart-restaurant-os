@@ -10,12 +10,11 @@ import { categoriesQuery } from "@/lib/restaurant-api";
 
 export const Route = createFileRoute("/_authenticated/restaurant/analytics")({
   beforeLoad: ({ context }) => {
-    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.restaurantOwnerOnly])) throw redirect({ to: "/unauthorized" });
+    if (!hasAnyRole(context.auth.roles, [...PANEL_ROLES.restaurantOwnerOnly]))
+      throw redirect({ to: "/unauthorized" });
   },
   component: () => (
-    <WithOwnerRestaurant>
-      {(r) => <AnalyticsContent restaurant={r} />}
-    </WithOwnerRestaurant>
+    <WithOwnerRestaurant>{(r) => <AnalyticsContent restaurant={r} />}</WithOwnerRestaurant>
   ),
 });
 
@@ -45,41 +44,45 @@ function AnalyticsContent({ restaurant: r }: { restaurant: { id: string; name: s
 
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard 
-          label="Total Revenue" 
-          value={ordersLoading ? "…" : formatINR(totalRev)} 
-          delta="Real-time gross" 
-          icon={IndianRupee} 
+        <StatCard
+          label="Total Revenue"
+          value={ordersLoading ? "…" : formatINR(totalRev)}
+          delta="Real-time gross"
+          icon={IndianRupee}
         />
-        <StatCard 
-          label="Total Orders" 
-          value={ordersLoading ? "…" : String(totalOrd)} 
-          delta={`${servedCount} served`} 
-          icon={ClipboardList} 
+        <StatCard
+          label="Total Orders"
+          value={ordersLoading ? "…" : String(totalOrd)}
+          delta={`${servedCount} served`}
+          icon={ClipboardList}
         />
-        <StatCard 
-          label="Average Order Value" 
-          value={ordersLoading ? "…" : formatINR(aov)} 
-          delta="Per dining ticket" 
-          icon={ShoppingBag} 
+        <StatCard
+          label="Average Order Value"
+          value={ordersLoading ? "…" : formatINR(aov)}
+          delta="Per dining ticket"
+          icon={ShoppingBag}
         />
-        <StatCard 
-          label="Fulfillment Rate" 
-          value={`${servedRate}%`} 
-          delta="Orders completed" 
-          icon={Repeat} 
+        <StatCard
+          label="Fulfillment Rate"
+          value={`${servedRate}%`}
+          delta="Orders completed"
+          icon={Repeat}
         />
       </div>
 
       {/* Charts & Breakdown */}
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Panel title="Order Volume Trend">
-          <p className="text-xs text-muted-foreground mb-3">Fulfilled dining room tickets over this cycle.</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Fulfilled dining room tickets over this cycle.
+          </p>
           <BarChart data={ordersChartData} />
         </Panel>
 
         <Panel title="Menu Category Distribution">
-          <p className="text-xs text-muted-foreground mb-4">Active sections configured for guest ordering.</p>
+          <p className="text-xs text-muted-foreground mb-4">
+            Active sections configured for guest ordering.
+          </p>
           {categories.length === 0 ? (
             <p className="py-8 text-center text-xs text-muted-foreground">
               Add menu categories in the Categories manager to see contribution analytics.

@@ -347,7 +347,7 @@ END $$;
 if (backup.restaurants && backup.restaurants.length > 0) {
   sql += `\n-- Restoring Restaurants (${backup.restaurants.length} rows)\n`;
   for (const r of backup.restaurants) {
-    const esc = (val) => val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`;
+    const esc = (val) => (val === null ? "NULL" : `'${String(val).replace(/'/g, "''")}'`);
     sql += `INSERT INTO public.restaurants (id, owner_id, name, slug, phone, logo_url, cover_url, address, email, description, created_at, updated_at)\n`;
     sql += `VALUES (${esc(r.id)}, ${esc(r.owner_id)}, ${esc(r.name)}, ${esc(r.slug)}, ${esc(r.phone)}, ${esc(r.logo_url)}, ${esc(r.cover_url)}, ${esc(r.address)}, ${esc(r.email)}, ${esc(r.description)}, ${esc(r.created_at)}, ${esc(r.updated_at)})\n`;
     sql += `ON CONFLICT (id) DO NOTHING;\n`;
@@ -358,7 +358,7 @@ if (backup.restaurants && backup.restaurants.length > 0) {
 if (backup.categories && backup.categories.length > 0) {
   sql += `\n-- Restoring Menu Categories (${backup.categories.length} rows)\n`;
   for (const c of backup.categories) {
-    const esc = (val) => val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`;
+    const esc = (val) => (val === null ? "NULL" : `'${String(val).replace(/'/g, "''")}'`);
     sql += `INSERT INTO public.menu_categories (id, restaurant_id, name, sort_order, created_at, updated_at)\n`;
     sql += `VALUES (${esc(c.id)}, ${esc(c.restaurant_id)}, ${esc(c.name)}, ${c.sort_order}, ${esc(c.created_at)}, ${esc(c.updated_at)})\n`;
     sql += `ON CONFLICT (id) DO NOTHING;\n`;
@@ -369,7 +369,7 @@ if (backup.categories && backup.categories.length > 0) {
 if (backup.items && backup.items.length > 0) {
   sql += `\n-- Restoring Menu Items (${backup.items.length} rows)\n`;
   for (const i of backup.items) {
-    const esc = (val) => val === null ? 'NULL' : `'${String(val).replace(/'/g, "''")}'`;
+    const esc = (val) => (val === null ? "NULL" : `'${String(val).replace(/'/g, "''")}'`);
     sql += `INSERT INTO public.menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_veg, is_available, sort_order, created_at, updated_at)\n`;
     sql += `VALUES (${esc(i.id)}, ${esc(i.restaurant_id)}, ${esc(i.category_id)}, ${esc(i.name)}, ${esc(i.description)}, ${i.price}, ${esc(i.image_url)}, ${i.is_veg}, ${i.is_available}, ${i.sort_order}, ${esc(i.created_at)}, ${esc(i.updated_at)})\n`;
     sql += `ON CONFLICT (id) DO NOTHING;\n`;

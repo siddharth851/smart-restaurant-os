@@ -6,10 +6,20 @@ import { toast } from "sonner";
 import { PageHeader, Panel, SimpleTable, StatusBadge } from "@/components/shared/ui-bits";
 import { WithOwnerRestaurant } from "@/components/admin/owner-restaurant";
 import { formatINR } from "@/lib/demo-data";
-import { nextStatus, ORDER_FLOW, restaurantOrdersQuery, STATUS_LABEL, useOrdersRealtime, useUpdateOrderStatus, type OrderStatus } from "@/lib/orders-api";
+import {
+  nextStatus,
+  ORDER_FLOW,
+  restaurantOrdersQuery,
+  STATUS_LABEL,
+  useOrdersRealtime,
+  useUpdateOrderStatus,
+  type OrderStatus,
+} from "@/lib/orders-api";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/restaurant/orders")({ component: OrdersPage });
+export const Route = createFileRoute("/_authenticated/restaurant/orders")({
+  component: OrdersPage,
+});
 
 function OrdersPage() {
   return (
@@ -58,7 +68,9 @@ function OrdersList({ restaurantId }: { restaurantId: string }) {
           </div>
         ) : isError ? (
           <div className="py-14 text-center">
-            <p className="text-sm font-semibold text-rose-600 mb-3">Couldn't load orders from the database.</p>
+            <p className="text-sm font-semibold text-rose-600 mb-3">
+              Couldn't load orders from the database.
+            </p>
             <Button
               variant="outline"
               size="sm"
@@ -75,12 +87,21 @@ function OrdersList({ restaurantId }: { restaurantId: string }) {
             </div>
             <p className="font-display text-sm font-bold text-stone-900">No orders found</p>
             <p className="mt-1 text-xs text-stone-500 max-w-sm mx-auto">
-              New orders will pop up here instantly as soon as guests scan table QR codes and submit their orders.
+              New orders will pop up here instantly as soon as guests scan table QR codes and submit
+              their orders.
             </p>
           </div>
         ) : (
           <SimpleTable
-            head={["Order Code", "Table & Guest", "Items Ordered", "Total", "Placed Time", "Status", "Action"]}
+            head={[
+              "Order Code",
+              "Table & Guest",
+              "Items Ordered",
+              "Total",
+              "Placed Time",
+              "Status",
+              "Action",
+            ]}
             rows={list.map((o) => {
               const n = nextStatus(o.status);
               const isBusy = update.isPending && update.variables?.id === o.id;
@@ -123,7 +144,8 @@ function OrdersList({ restaurantId }: { restaurantId: string }) {
                       update.mutate(
                         { id: o.id, status: n.to },
                         {
-                          onSuccess: () => toast.success(`Order ${o.code} marked as ${STATUS_LABEL[n.to]}`),
+                          onSuccess: () =>
+                            toast.success(`Order ${o.code} marked as ${STATUS_LABEL[n.to]}`),
                           onError: (e) => toast.error(e.message),
                         },
                       )

@@ -104,7 +104,10 @@ export function HowItWorksSection() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 sm:py-28 bg-stone-50 border-t border-stone-200/80 text-stone-900 scroll-mt-20">
+    <section
+      id="how-it-works"
+      className="py-20 sm:py-28 bg-stone-50 border-t border-stone-200/80 text-stone-900 scroll-mt-20"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
@@ -142,9 +145,7 @@ export function HowItWorksSection() {
               </div>
 
               {/* Description */}
-              <p className="text-xs text-stone-600 leading-relaxed">
-                {step.desc}
-              </p>
+              <p className="text-xs text-stone-600 leading-relaxed">{step.desc}</p>
 
               {/* Connecting arrow for desktop between steps */}
               {idx < steps.length - 1 && (

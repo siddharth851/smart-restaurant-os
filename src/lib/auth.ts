@@ -10,7 +10,9 @@ export type AuthInfo = {
   roles: AppRole[];
 };
 
-export const SUPER_ADMIN_EMAIL = (import.meta.env.VITE_SUPER_ADMIN_EMAIL || "admin@smartrestaurantos.com").toLowerCase();
+export const SUPER_ADMIN_EMAIL = (
+  import.meta.env.VITE_SUPER_ADMIN_EMAIL || "admin@smartrestaurantos.com"
+).toLowerCase();
 export const SUPER_ADMIN_ID = "00000000-0000-0000-0000-000000000001";
 
 const STORAGE_KEY = "smartos_auth_session";
@@ -57,7 +59,12 @@ export async function loadAuthInfo(): Promise<AuthInfo | null> {
       const [{ data: roles }, { data: profile }, { data: myRest }] = await Promise.all([
         supabase.from("user_roles").select("role").eq("user_id", user.id),
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("restaurants").select("id, slug").eq("owner_id", user.id).limit(1).maybeSingle(),
+        supabase
+          .from("restaurants")
+          .select("id, slug")
+          .eq("owner_id", user.id)
+          .limit(1)
+          .maybeSingle(),
       ]);
 
       const userRoles = (roles ?? []).map((r) => r.role);
@@ -71,7 +78,11 @@ export async function loadAuthInfo(): Promise<AuthInfo | null> {
       setLocalSession({
         userId: user.id,
         email: user.email ?? "",
-        name: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "Restaurant Owner",
+        name:
+          profile?.full_name ||
+          (user.user_metadata?.full_name as string) ||
+          user.email ||
+          "Restaurant Owner",
         roles: userRoles.length > 0 ? userRoles : ["restaurant_owner"],
         restaurantId: myRest?.id,
         restaurantSlug: myRest?.slug,
@@ -80,7 +91,11 @@ export async function loadAuthInfo(): Promise<AuthInfo | null> {
       return {
         userId: user.id,
         email: user.email ?? "",
-        name: profile?.full_name || (user.user_metadata?.full_name as string) || user.email || "Account",
+        name:
+          profile?.full_name ||
+          (user.user_metadata?.full_name as string) ||
+          user.email ||
+          "Account",
         roles: userRoles.length > 0 ? userRoles : ["restaurant_owner"],
       };
     }
@@ -116,7 +131,8 @@ export async function signOutAll(): Promise<void> {
   }
 }
 
-export const hasAnyRole = (roles: AppRole[], allowed: AppRole[]) => roles.some((r) => allowed.includes(r));
+export const hasAnyRole = (roles: AppRole[], allowed: AppRole[]) =>
+  roles.some((r) => allowed.includes(r));
 
 /** Access matrix for the two authenticated panels (Super Admin & Restaurant Owner). */
 export const PANEL_ROLES = {

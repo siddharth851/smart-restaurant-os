@@ -5,7 +5,14 @@ import { Loader2, Pencil, Plus, Search, Trash2, UtensilsCrossed } from "lucide-r
 import { toast } from "sonner";
 import { z } from "zod";
 import { formatINR } from "@/lib/demo-data";
-import { categoriesQuery, itemsQuery, uploadImage, useItemMutations, type CategoryRow, type OwnerItem } from "@/lib/restaurant-api";
+import {
+  categoriesQuery,
+  itemsQuery,
+  uploadImage,
+  useItemMutations,
+  type CategoryRow,
+  type OwnerItem,
+} from "@/lib/restaurant-api";
 import { ImageField, WithOwnerRestaurant } from "@/components/admin/owner-restaurant";
 import { PageHeader, Panel, VegMark } from "@/components/shared/ui-bits";
 import { FieldError } from "@/components/auth/auth-shell";
@@ -14,22 +21,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 export const itemSchema = z.object({
   name: z.string().trim().min(1, "Dish name is required").max(100),
   description: z.string().trim().max(500, "Keep it under 500 characters"),
-  price: z.coerce.number({ invalid_type_error: "Enter a price" }).min(0, "Price can't be negative").max(1_000_000, "Price is too high")
+  price: z.coerce
+    .number({ invalid_type_error: "Enter a price" })
+    .min(0, "Price can't be negative")
+    .max(1_000_000, "Price is too high")
     .refine((n) => Math.round(n * 100) === n * 100, "Use at most 2 decimals"),
 });
 
 export const Route = createFileRoute("/_authenticated/restaurant/menu")({
-  component: () => <WithOwnerRestaurant>{(r) => <MenuManager restaurantId={r.id} slug={r.slug} />}</WithOwnerRestaurant>,
+  component: () => (
+    <WithOwnerRestaurant>
+      {(r) => <MenuManager restaurantId={r.id} slug={r.slug} />}
+    </WithOwnerRestaurant>
+  ),
 });
 
 type Item = OwnerItem;
@@ -44,7 +71,12 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
   const [cat, setCat] = useState("all");
 
   const list = useMemo(
-    () => (items ?? []).filter((i) => (cat === "all" || (cat === "none" ? !i.category_id : i.category_id === cat)) && i.name.toLowerCase().includes(q.trim().toLowerCase())),
+    () =>
+      (items ?? []).filter(
+        (i) =>
+          (cat === "all" || (cat === "none" ? !i.category_id : i.category_id === cat)) &&
+          i.name.toLowerCase().includes(q.trim().toLowerCase()),
+      ),
     [items, q, cat],
   );
 
@@ -61,10 +93,18 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
     <>
       <PageHeader
         title="Menu Management"
-        description={items ? `${items.length} dish${items.length === 1 ? "" : "es"} across ${cats.length} categor${cats.length === 1 ? "y" : "ies"}` : undefined}
+        description={
+          items
+            ? `${items.length} dish${items.length === 1 ? "" : "es"} across ${cats.length} categor${cats.length === 1 ? "y" : "ies"}`
+            : undefined
+        }
         actions={
           <>
-            <Button asChild variant="outline" className="rounded-xl border-stone-200 hover:bg-stone-100 font-semibold text-xs sm:text-sm">
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-xl border-stone-200 hover:bg-stone-100 font-semibold text-xs sm:text-sm"
+            >
               <Link to="/menu/$restaurantSlug" params={{ restaurantSlug: slug }} target="_blank">
                 View Live Menu
               </Link>
@@ -82,29 +122,60 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search dishes" className="h-11 pl-9" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search dishes"
+            className="h-11 pl-9"
+          />
         </div>
         <Select value={cat} onValueChange={setCat}>
-          <SelectTrigger className="h-11 sm:w-56"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-11 sm:w-56">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All categories</SelectItem>
-            {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            {cats.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
             <SelectItem value="none">Uncategorised</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {isLoading ? (
-        <div className="grid place-items-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+        <div className="grid place-items-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
       ) : isError ? (
-        <Panel><p className="text-sm text-destructive">Couldn't load dishes: {error.message}</p></Panel>
+        <Panel>
+          <p className="text-sm text-destructive">Couldn't load dishes: {error.message}</p>
+        </Panel>
       ) : !items?.length ? (
         <Panel>
           <div className="py-10 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-accent text-accent-foreground"><UtensilsCrossed /></div>
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-accent text-accent-foreground">
+              <UtensilsCrossed />
+            </div>
             <p className="mt-3 font-semibold">No dishes yet</p>
-            <p className="text-sm text-muted-foreground">{cats.length ? "Add your first dish to publish your menu." : <>Start by <Link to="/restaurant/categories" className="font-semibold text-primary">creating a category</Link>, then add dishes.</>}</p>
-            <Button className="mt-4" onClick={() => setEditing("new")}><Plus /> Add dish</Button>
+            <p className="text-sm text-muted-foreground">
+              {cats.length ? (
+                "Add your first dish to publish your menu."
+              ) : (
+                <>
+                  Start by{" "}
+                  <Link to="/restaurant/categories" className="font-semibold text-primary">
+                    creating a category
+                  </Link>
+                  , then add dishes.
+                </>
+              )}
+            </p>
+            <Button className="mt-4" onClick={() => setEditing("new")}>
+              <Plus /> Add dish
+            </Button>
           </div>
         </Panel>
       ) : (
@@ -144,7 +215,9 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
                 <div className="p-5">
                   <div className="flex items-center gap-2">
                     <VegMark veg={i.is_veg} />
-                    <h3 className="truncate font-display text-base font-bold text-stone-900">{i.name}</h3>
+                    <h3 className="truncate font-display text-base font-bold text-stone-900">
+                      {i.name}
+                    </h3>
                   </div>
                   <p className="mt-1 line-clamp-2 min-h-8 text-xs text-stone-500 leading-relaxed">
                     {i.description || "No description provided."}
@@ -197,7 +270,9 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
 
       <Sheet open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
-          <SheetHeader><SheetTitle>{editing === "new" ? "Add dish" : "Edit dish"}</SheetTitle></SheetHeader>
+          <SheetHeader>
+            <SheetTitle>{editing === "new" ? "Add dish" : "Edit dish"}</SheetTitle>
+          </SheetHeader>
           {editing && (
             <ItemForm
               key={editing === "new" ? "new" : editing.id}
@@ -214,7 +289,9 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{toDelete?.name}"?</AlertDialogTitle>
-            <AlertDialogDescription>This removes the dish from your menu permanently.</AlertDialogDescription>
+            <AlertDialogDescription>
+              This removes the dish from your menu permanently.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -240,20 +317,41 @@ function MenuManager({ restaurantId, slug }: { restaurantId: string; slug: strin
   );
 }
 
-function ItemForm({ item, cats, restaurantId, onDone }: { item: Item | null; cats: CategoryRow[]; restaurantId: string; onDone: () => void }) {
+function ItemForm({
+  item,
+  cats,
+  restaurantId,
+  onDone,
+}: {
+  item: Item | null;
+  cats: CategoryRow[];
+  restaurantId: string;
+  onDone: () => void;
+}) {
   const m = useItemMutations(restaurantId);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [veg, setVeg] = useState(item?.is_veg ?? true);
   const [available, setAvailable] = useState(item?.is_available ?? true);
   const [categoryId, setCategoryId] = useState<string>(item?.category_id ?? cats[0]?.id ?? "none");
-  const [img, setImg] = useState<{ file: File | null; preview: string | null; cleared: boolean }>({ file: null, preview: item?.imageSrc ?? null, cleared: false });
+  const [img, setImg] = useState<{ file: File | null; preview: string | null; cleared: boolean }>({
+    file: null,
+    preview: item?.imageSrc ?? null,
+    cleared: false,
+  });
   const [saving, setSaving] = useState(false);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const raw = { name: fd.get("name") ?? "", description: fd.get("description") ?? "", price: String(fd.get("price") ?? "").trim() };
-    const parsed = itemSchema.safeParse({ ...raw, price: raw.price === "" ? undefined : raw.price });
+    const raw = {
+      name: fd.get("name") ?? "",
+      description: fd.get("description") ?? "",
+      price: String(fd.get("price") ?? "").trim(),
+    };
+    const parsed = itemSchema.safeParse({
+      ...raw,
+      price: raw.price === "" ? undefined : raw.price,
+    });
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
       return;
@@ -261,10 +359,20 @@ function ItemForm({ item, cats, restaurantId, onDone }: { item: Item | null; cat
     setErrors({});
     setSaving(true);
     try {
-      const image_url = img.file ? await uploadImage(restaurantId, "items", img.file) : img.cleared ? null : (item?.image_url ?? null);
+      const image_url = img.file
+        ? await uploadImage(restaurantId, "items", img.file)
+        : img.cleared
+          ? null
+          : (item?.image_url ?? null);
       await m.save.mutateAsync({
         id: item?.id,
-        values: { ...parsed.data, is_veg: veg, is_available: available, category_id: categoryId === "none" ? null : categoryId, image_url },
+        values: {
+          ...parsed.data,
+          is_veg: veg,
+          is_available: available,
+          category_id: categoryId === "none" ? null : categoryId,
+          image_url,
+        },
       });
       toast.success(item ? "Dish updated" : "Dish added");
       onDone();
@@ -286,26 +394,54 @@ function ItemForm({ item, cats, restaurantId, onDone }: { item: Item | null; cat
       />
       <div>
         <Label htmlFor="name">Dish name</Label>
-        <Input id="name" name="name" defaultValue={item?.name ?? ""} className="mt-2 h-11" aria-invalid={!!errors["name"]} />
+        <Input
+          id="name"
+          name="name"
+          defaultValue={item?.name ?? ""}
+          className="mt-2 h-11"
+          aria-invalid={!!errors["name"]}
+        />
         <FieldError message={errors["name"]} />
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" name="description" defaultValue={item?.description ?? ""} rows={3} className="mt-2" />
+        <Textarea
+          id="description"
+          name="description"
+          defaultValue={item?.description ?? ""}
+          rows={3}
+          className="mt-2"
+        />
         <FieldError message={errors["description"]} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="price">Price (₹)</Label>
-          <Input id="price" name="price" type="number" inputMode="decimal" min="0" step="0.01" defaultValue={item ? String(item.price) : ""} className="mt-2 h-11" aria-invalid={!!errors["price"]} />
+          <Input
+            id="price"
+            name="price"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.01"
+            defaultValue={item ? String(item.price) : ""}
+            className="mt-2 h-11"
+            aria-invalid={!!errors["price"]}
+          />
           <FieldError message={errors["price"]} />
         </div>
         <div>
           <Label>Category</Label>
           <Select value={categoryId} onValueChange={setCategoryId}>
-            <SelectTrigger className="mt-2 h-11" aria-label="Category"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-2 h-11" aria-label="Category">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
-              {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+              {cats.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
               <SelectItem value="none">Uncategorised</SelectItem>
             </SelectContent>
           </Select>
@@ -314,14 +450,24 @@ function ItemForm({ item, cats, restaurantId, onDone }: { item: Item | null; cat
       <div>
         <Label>Type</Label>
         <div className="mt-2 grid grid-cols-2 gap-2" role="radiogroup">
-          {[{ v: true, l: "Veg" }, { v: false, l: "Non-veg" }].map((o) => (
+          {[
+            { v: true, l: "Veg" },
+            { v: false, l: "Non-veg" },
+          ].map((o) => (
             <button
               key={o.l}
               type="button"
               role="radio"
               aria-checked={veg === o.v}
               onClick={() => setVeg(o.v)}
-              className={cn("flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-semibold", veg === o.v ? (o.v ? "border-success bg-success/10 text-success" : "border-destructive bg-destructive/10 text-destructive") : "bg-card text-muted-foreground")}
+              className={cn(
+                "flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-semibold",
+                veg === o.v
+                  ? o.v
+                    ? "border-success bg-success/10 text-success"
+                    : "border-destructive bg-destructive/10 text-destructive"
+                  : "bg-card text-muted-foreground",
+              )}
             >
               <VegMark veg={o.v} /> {o.l}
             </button>

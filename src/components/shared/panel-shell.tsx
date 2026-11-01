@@ -55,9 +55,7 @@ export function PanelShell({ brand, subtitle, nav, user, footer }: Props) {
           <p className="truncate font-display text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
             {brand}
           </p>
-          <p className="truncate text-[11px] font-medium text-stone-400">
-            {subtitle}
-          </p>
+          <p className="truncate text-[11px] font-medium text-stone-400">{subtitle}</p>
         </div>
       </div>
 
@@ -103,7 +101,8 @@ export function PanelShell({ brand, subtitle, nav, user, footer }: Props) {
         ) : (
           <div className="flex items-center justify-between text-xs text-stone-400 px-2 py-1">
             <span className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> Live Cloud Active
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> Live Cloud
+              Active
             </span>
             <span className="text-[10px] text-stone-600">v2.4</span>
           </div>

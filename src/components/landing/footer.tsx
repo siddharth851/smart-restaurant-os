@@ -18,7 +18,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-xs text-stone-400 max-w-sm leading-relaxed">
-              A smarter way to serve. The complete restaurant operating system for QR ordering, real-time kitchen displays, and effortless table management.
+              A smarter way to serve. The complete restaurant operating system for QR ordering,
+              real-time kitchen displays, and effortless table management.
             </p>
             <div className="pt-2">
               <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
@@ -31,11 +32,31 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Product</h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="#home" className="hover:text-white transition-colors">Home</a></li>
-              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-              <li><a href="#solutions" className="hover:text-white transition-colors">Solutions</a></li>
-              <li><a href="#testimonials" className="hover:text-white transition-colors">Customer Stories</a></li>
+              <li>
+                <a href="#home" className="hover:text-white transition-colors">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-white transition-colors">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#how-it-works" className="hover:text-white transition-colors">
+                  How It Works
+                </a>
+              </li>
+              <li>
+                <a href="#solutions" className="hover:text-white transition-colors">
+                  Solutions
+                </a>
+              </li>
+              <li>
+                <a href="#testimonials" className="hover:text-white transition-colors">
+                  Customer Stories
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -44,7 +65,11 @@ export function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Live Panels</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/menu/$restaurantSlug" params={{ restaurantSlug: "saffron-table" }} className="hover:text-white transition-colors">
+                <Link
+                  to="/menu/$restaurantSlug"
+                  params={{ restaurantSlug: "saffron-table" }}
+                  className="hover:text-white transition-colors"
+                >
                   Guest QR Menu
                 </Link>
               </li>
@@ -70,10 +95,26 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Access & Help</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link to="/login" className="hover:text-white transition-colors">Sign In</Link></li>
-              <li><Link to="/register" className="hover:text-white transition-colors">Register Restaurant</Link></li>
-              <li><Link to="/staff/login" className="hover:text-white transition-colors">Staff Login</Link></li>
-              <li><a href="mailto:support@dineos.app" className="hover:text-white transition-colors">support@dineos.app</a></li>
+              <li>
+                <Link to="/login" className="hover:text-white transition-colors">
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="hover:text-white transition-colors">
+                  Register Restaurant
+                </Link>
+              </li>
+              <li>
+                <Link to="/staff/login" className="hover:text-white transition-colors">
+                  Staff Login
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:support@dineos.app" className="hover:text-white transition-colors">
+                  support@dineos.app
+                </a>
+              </li>
             </ul>
           </div>
         </div>

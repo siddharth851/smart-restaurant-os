@@ -10,7 +10,13 @@ export const Route = createFileRoute("/_authenticated/restaurant/kitchen")({
       <PageHeader
         title="Kitchen Display"
         description="Move tickets through the line as dishes are cooked."
-        actions={<Button asChild variant="outline"><Link to="/kitchen"><Maximize2 /> Full screen</Link></Button>}
+        actions={
+          <Button asChild variant="outline">
+            <Link to="/kitchen">
+              <Maximize2 /> Full screen
+            </Link>
+          </Button>
+        }
       />
       <KdsBoard />
     </>

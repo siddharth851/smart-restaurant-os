@@ -93,7 +93,9 @@ export const adminDeleteRestaurantServer = createServerFn({ method: "POST" })
         .eq("id", id)
         .single();
 
-      const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
+      const cleanDesc = (current?.description ?? "")
+        .replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "")
+        .trim();
       const { error } = await supabaseAdmin
         .from("restaurants")
         .update({ description: `[ARCHIVED] ${cleanDesc}`.trim() })
@@ -111,7 +113,9 @@ export const adminDeleteRestaurantServer = createServerFn({ method: "POST" })
           .eq("id", id)
           .single();
 
-        const cleanDesc = (current?.description ?? "").replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "").trim();
+        const cleanDesc = (current?.description ?? "")
+          .replace(/\[(SUSPENDED|ARCHIVED|DELETED)\]/g, "")
+          .trim();
         await supabaseAdmin
           .from("restaurants")
           .update({ description: `[ARCHIVED] ${cleanDesc}`.trim() })

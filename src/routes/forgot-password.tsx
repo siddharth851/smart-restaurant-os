@@ -28,27 +28,50 @@ function Forgot() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const parsed = z.string().trim().email("Enter a valid email").safeParse(new FormData(e.currentTarget).get("email"));
+    const parsed = z
+      .string()
+      .trim()
+      .email("Enter a valid email")
+      .safeParse(new FormData(e.currentTarget).get("email"));
     if (!parsed.success) return setError(parsed.error.issues[0]?.message);
     setError(undefined);
     setFormError(null);
     setLoading(true);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data, { redirectTo: `${window.location.origin}/reset-password` });
+    const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
     setLoading(false);
     if (err) return setFormError(err.message);
     setSent(true);
   };
 
   return (
-    <AuthShell eyebrow="Account recovery" title="Forgot your password?" subtitle="We'll email you a secure link to set a new one." footer={<Link to="/login" className="font-semibold text-primary">Back to sign in</Link>}>
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Forgot your password?"
+      subtitle="We'll email you a secure link to set a new one."
+      footer={
+        <Link to="/login" className="font-semibold text-primary">
+          Back to sign in
+        </Link>
+      }
+    >
       {sent ? (
-        <FormAlert tone="success">If an account exists for that email, a reset link is on its way.</FormAlert>
+        <FormAlert tone="success">
+          If an account exists for that email, a reset link is on its way.
+        </FormAlert>
       ) : (
         <form onSubmit={onSubmit} noValidate className="space-y-5">
           {formError && <FormAlert tone="error">{formError}</FormAlert>}
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" autoComplete="email" className="mt-2 h-12" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              className="mt-2 h-12"
+            />
             <FieldError message={error} />
           </div>
           <Button

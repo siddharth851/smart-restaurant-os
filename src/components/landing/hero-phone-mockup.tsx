@@ -117,7 +117,9 @@ export function HeroPhoneMockup() {
                       <h5 className="text-xs font-bold text-white">Paneer Tikka</h5>
                       <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30" />
                     </div>
-                    <p className="text-[10px] text-stone-400 line-clamp-1">Charred cottage cheese & mint dip</p>
+                    <p className="text-[10px] text-stone-400 line-clamp-1">
+                      Charred cottage cheese & mint dip
+                    </p>
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs font-bold text-amber-400">₹250</span>
@@ -129,7 +131,11 @@ export function HeroPhoneMockup() {
                           : "bg-stone-800 text-emerald-400 hover:bg-emerald-500 hover:text-stone-950"
                       }`}
                     >
-                      {addedItems["Paneer Tikka"] ? <Check className="h-3 w-3 stroke-[3]" /> : <Plus className="h-3.5 w-3.5" />}
+                      {addedItems["Paneer Tikka"] ? (
+                        <Check className="h-3 w-3 stroke-[3]" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -148,7 +154,9 @@ export function HeroPhoneMockup() {
                       <h5 className="text-xs font-bold text-white">Masala Dosa</h5>
                       <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30" />
                     </div>
-                    <p className="text-[10px] text-stone-400 line-clamp-1">Crisp crepe with spiced potato</p>
+                    <p className="text-[10px] text-stone-400 line-clamp-1">
+                      Crisp crepe with spiced potato
+                    </p>
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs font-bold text-amber-400">₹180</span>
@@ -160,7 +168,11 @@ export function HeroPhoneMockup() {
                           : "bg-stone-800 text-emerald-400 hover:bg-emerald-500 hover:text-stone-950"
                       }`}
                     >
-                      {addedItems["Masala Dosa"] ? <Check className="h-3 w-3 stroke-[3]" /> : <Plus className="h-3.5 w-3.5" />}
+                      {addedItems["Masala Dosa"] ? (
+                        <Check className="h-3 w-3 stroke-[3]" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -169,12 +181,20 @@ export function HeroPhoneMockup() {
               {/* Mini Item 3 & 4 row */}
               <div className="grid grid-cols-2 gap-2 pt-0.5">
                 <div className="rounded-xl bg-stone-900/60 p-2 border border-stone-800 text-center">
-                  <img src={lassiImg} alt="Cold Brew" className="h-10 w-full object-cover rounded-lg mb-1" />
+                  <img
+                    src={lassiImg}
+                    alt="Cold Brew"
+                    className="h-10 w-full object-cover rounded-lg mb-1"
+                  />
                   <p className="text-[10px] font-bold text-stone-200 truncate">Mango Lassi</p>
                   <p className="text-[10px] font-bold text-amber-400">₹160</p>
                 </div>
                 <div className="rounded-xl bg-stone-900/60 p-2 border border-stone-800 text-center">
-                  <img src={gulabImg} alt="Dessert" className="h-10 w-full object-cover rounded-lg mb-1" />
+                  <img
+                    src={gulabImg}
+                    alt="Dessert"
+                    className="h-10 w-full object-cover rounded-lg mb-1"
+                  />
                   <p className="text-[10px] font-bold text-stone-200 truncate">Gulab Jamun</p>
                   <p className="text-[10px] font-bold text-amber-400">₹150</p>
                 </div>
@@ -207,8 +227,12 @@ export function HeroPhoneMockup() {
             <div className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-lg bg-stone-900 text-amber-400 shadow-sm">
               <Sparkles className="h-4 w-4" />
             </div>
-            <h4 className="font-display text-sm font-extrabold text-stone-900 tracking-tight">Riverside Café</h4>
-            <p className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider">Table # 14</p>
+            <h4 className="font-display text-sm font-extrabold text-stone-900 tracking-tight">
+              Riverside Café
+            </h4>
+            <p className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider">
+              Table # 14
+            </p>
           </div>
 
           {/* Authentic QR Display */}
@@ -257,7 +281,14 @@ export function HeroPhoneMockup() {
 
                 {/* Center logo badge */}
                 <rect x="48" y="48" width="24" height="24" rx="5" fill="#10b981" />
-                <path d="M54 60 L 59 65 L 67 55" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                <path
+                  d="M54 60 L 59 65 L 67 55"
+                  stroke="#ffffff"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
               </svg>
             </div>
             <span className="mt-2 text-xs font-black tracking-tight uppercase text-stone-900">

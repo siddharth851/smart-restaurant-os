@@ -3,15 +3,15 @@ import { useState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  hasAnyRole, 
-  homeForRoles, 
-  loadAuthInfo, 
-  safeRedirect, 
-  setLocalSession, 
-  SUPER_ADMIN_EMAIL, 
-  SUPER_ADMIN_ID, 
-  type AppRole 
+import {
+  hasAnyRole,
+  homeForRoles,
+  loadAuthInfo,
+  safeRedirect,
+  setLocalSession,
+  SUPER_ADMIN_EMAIL,
+  SUPER_ADMIN_ID,
+  type AppRole,
 } from "@/lib/auth";
 import { authenticateSuperAdminServer } from "@/lib/admin.server";
 import { confirmUserServerFn } from "@/lib/auth.server";
@@ -25,7 +25,15 @@ const schema = z.object({
   password: z.string().min(1, "Password is required").max(72),
 });
 
-export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: AppRole[]; wrongPortalHint: string; redirectTo?: string | undefined }) {
+export function LoginForm({
+  allowed,
+  wrongPortalHint,
+  redirectTo,
+}: {
+  allowed: AppRole[];
+  wrongPortalHint: string;
+  redirectTo?: string | undefined;
+}) {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -73,8 +81,11 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
 
     // 2. Authenticate Restaurant Owner via Supabase Auth
     try {
-      let { data: suData, error: suError } = await supabase.auth.signInWithPassword({ email, password });
-      
+      let { data: suData, error: suError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
       // Auto-confirm existing unconfirmed accounts server-side without user intervention
       if (suError && suError.message.toLowerCase().includes("email not confirmed")) {
         try {
@@ -111,7 +122,8 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
         setLocalSession({
           userId: suData.user.id,
           email: suData.user.email ?? email,
-          name: (suData.user.user_metadata?.full_name as string) || rest?.name || "Restaurant Owner",
+          name:
+            (suData.user.user_metadata?.full_name as string) || rest?.name || "Restaurant Owner",
           roles: ["restaurant_owner"],
           restaurantId: rest?.id,
           restaurantSlug: rest?.slug,
@@ -123,12 +135,16 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
       }
     } catch (err) {
       setLoading(false);
-      setFormError(err instanceof Error ? err.message : "Authentication error. Please check your credentials.");
+      setFormError(
+        err instanceof Error ? err.message : "Authentication error. Please check your credentials.",
+      );
       return;
     }
 
     setLoading(false);
-    setFormError("Incorrect email or password, or account is not registered as a restaurant owner.");
+    setFormError(
+      "Incorrect email or password, or account is not registered as a restaurant owner.",
+    );
   };
 
   return (
@@ -136,13 +152,13 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
       {formError && <FormAlert tone="error">{formError}</FormAlert>}
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input 
-          id="email" 
-          name="email" 
-          type="email" 
-          autoComplete="email" 
-          className="mt-2 h-12" 
-          aria-invalid={!!errors["email"]} 
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          className="mt-2 h-12"
+          aria-invalid={!!errors["email"]}
           placeholder="your@email.com"
         />
         <FieldError message={errors["email"]} />
@@ -150,15 +166,17 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
       <div>
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Password</Label>
-          <Link to="/forgot-password" className="text-xs font-semibold text-primary">Forgot password?</Link>
+          <Link to="/forgot-password" className="text-xs font-semibold text-primary">
+            Forgot password?
+          </Link>
         </div>
-        <Input 
-          id="password" 
-          name="password" 
-          type="password" 
-          autoComplete="current-password" 
-          className="mt-2 h-12" 
-          aria-invalid={!!errors["password"]} 
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          className="mt-2 h-12"
+          aria-invalid={!!errors["password"]}
           placeholder="••••••••"
         />
         <FieldError message={errors["password"]} />

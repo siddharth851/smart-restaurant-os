@@ -32,7 +32,10 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <section id="testimonials" className="py-20 sm:py-28 bg-stone-50 border-t border-stone-200/80 text-stone-900 scroll-mt-20">
+    <section
+      id="testimonials"
+      className="py-20 sm:py-28 bg-stone-50 border-t border-stone-200/80 text-stone-900 scroll-mt-20"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
@@ -63,9 +66,7 @@ export function TestimonialsSection() {
                 </div>
 
                 {/* Quote */}
-                <p className="text-sm text-stone-700 leading-relaxed italic">
-                  "{t.quote}"
-                </p>
+                <p className="text-sm text-stone-700 leading-relaxed italic">"{t.quote}"</p>
               </div>
 
               {/* Author Info */}

@@ -1,18 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  ArrowLeft, 
-  Loader2, 
-  Minus, 
-  Plus, 
-  ShoppingBag, 
-  Trash2, 
-  UtensilsCrossed, 
+import {
+  ArrowLeft,
+  Loader2,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Trash2,
+  UtensilsCrossed,
   Sparkles,
   Receipt,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import { formatINR } from "@/lib/demo-data";
 import { guestSchema, placeOrder } from "@/lib/restaurant-api";
@@ -33,22 +33,29 @@ export function CartPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [notes, setNotes] = useState("");
-  const [errors, setErrors] = useState<{ customerName?: string | undefined; table?: string | undefined }>({});
+  const [errors, setErrors] = useState<{
+    customerName?: string | undefined;
+    table?: string | undefined;
+  }>({});
 
   const order = useMutation({
     mutationFn: placeOrder,
     onSuccess: (res, vars) => {
-      cart.setLastOrder({ 
-        code: res.code, 
-        total: res.total, 
-        createdAt: res.createdAt, 
-        table: vars.table, 
-        customerName: vars.customerName.trim(), 
-        lines: cart.lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })) 
+      cart.setLastOrder({
+        code: res.code,
+        total: res.total,
+        createdAt: res.createdAt,
+        table: vars.table,
+        customerName: vars.customerName.trim(),
+        lines: cart.lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })),
       });
       cart.clear();
       toast.success(`Order ${res.code} placed successfully!`);
-      navigate({ to: "/menu/$restaurantSlug/track", params: { restaurantSlug }, search: { order: res.code } });
+      navigate({
+        to: "/menu/$restaurantSlug/track",
+        params: { restaurantSlug },
+        search: { order: res.code },
+      });
     },
     onError: (e: Error) => {
       toast.error(e.message || "Couldn't place your order. Please try again.");
@@ -57,7 +64,10 @@ export function CartPage() {
   });
 
   const submit = () => {
-    const parsed = guestSchema.safeParse({ customerName: cart.customerName, table: cart.table ?? undefined });
+    const parsed = guestSchema.safeParse({
+      customerName: cart.customerName,
+      table: cart.table ?? undefined,
+    });
     if (!parsed.success) {
       const f = parsed.error.flatten().fieldErrors;
       setErrors({ customerName: f.customerName?.[0], table: f.table?.[0] });
@@ -66,16 +76,16 @@ export function CartPage() {
     }
     setErrors({});
     const unavailable = cart.lines.find((l) => !l.item.available);
-    if (unavailable) { 
-      toast.error(`${unavailable.item.name} is out of stock — remove it to continue`); 
-      return; 
+    if (unavailable) {
+      toast.error(`${unavailable.item.name} is out of stock — remove it to continue`);
+      return;
     }
-    order.mutate({ 
-      slug: restaurantSlug, 
-      customerName: parsed.data.customerName, 
-      table: parsed.data.table, 
-      notes, 
-      lines: cart.lines.map((l) => ({ id: l.item.id, qty: l.qty })) 
+    order.mutate({
+      slug: restaurantSlug,
+      customerName: parsed.data.customerName,
+      table: parsed.data.table,
+      notes,
+      lines: cart.lines.map((l) => ({ id: l.item.id, qty: l.qty })),
     });
   };
 
@@ -89,17 +99,21 @@ export function CartPage() {
       <header className="sticky top-0 z-20 border-b border-border/70 bg-background/95 px-4 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link 
-              to="/menu/$restaurantSlug" 
-              params={{ restaurantSlug }} 
-              className="grid h-10 w-10 place-items-center rounded-xl border border-border/80 bg-card text-foreground transition-all hover:bg-muted" 
+            <Link
+              to="/menu/$restaurantSlug"
+              params={{ restaurantSlug }}
+              className="grid h-10 w-10 place-items-center rounded-xl border border-border/80 bg-card text-foreground transition-all hover:bg-muted"
               aria-label="Back to menu"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
-              <h1 className="text-base font-extrabold text-foreground font-display sm:text-lg">Review Order</h1>
-              <p className="text-xs text-muted-foreground">{cart.count} {cart.count === 1 ? "item" : "items"} in cart</p>
+              <h1 className="text-base font-extrabold text-foreground font-display sm:text-lg">
+                Review Order
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                {cart.count} {cart.count === 1 ? "item" : "items"} in cart
+              </p>
             </div>
           </div>
           {cart.table && (
@@ -116,11 +130,15 @@ export function CartPage() {
             <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-muted text-muted-foreground">
               <ShoppingBag className="h-8 w-8 text-muted-foreground/60" />
             </div>
-            <p className="mt-4 font-display text-lg font-bold text-foreground">Your cart is empty</p>
-            <p className="mt-1 text-xs text-muted-foreground">Add some delicious dishes from the menu to get started.</p>
-            <Link 
-              to="/menu/$restaurantSlug" 
-              params={{ restaurantSlug }} 
+            <p className="mt-4 font-display text-lg font-bold text-foreground">
+              Your cart is empty
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Add some delicious dishes from the menu to get started.
+            </p>
+            <Link
+              to="/menu/$restaurantSlug"
+              params={{ restaurantSlug }}
               className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-forest px-6 text-sm font-bold text-forest-foreground shadow-soft transition-all hover:bg-forest/90"
             >
               Browse Menu
@@ -133,7 +151,9 @@ export function CartPage() {
               {/* Dining Info on Mobile (shows first) */}
               <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-soft lg:hidden">
                 <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Table & Guest</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Table & Guest
+                  </p>
                   <span className="text-[11px] text-muted-foreground">Required for order</span>
                 </div>
                 <GuestDetails errors={errors} className="grid-cols-[1fr_7.5rem]" />
@@ -141,9 +161,11 @@ export function CartPage() {
 
               <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-soft">
                 <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Order Items</h2>
-                  <button 
-                    onClick={() => cart.clear()} 
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Order Items
+                  </h2>
+                  <button
+                    onClick={() => cart.clear()}
                     className="text-xs font-semibold text-muted-foreground hover:text-destructive transition-colors"
                   >
                     Clear All
@@ -152,15 +174,18 @@ export function CartPage() {
 
                 <div className="divide-y divide-border/50">
                   {cart.lines.map(({ item, qty }) => (
-                    <div key={item.id} className="flex items-center gap-3.5 py-3 first:pt-0 last:pb-0">
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-3.5 py-3 first:pt-0 last:pb-0"
+                    >
                       {item.image ? (
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          loading="lazy" 
-                          width={100} 
-                          height={100} 
-                          className="h-16 w-16 shrink-0 rounded-xl object-cover ring-1 ring-border/50" 
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          loading="lazy"
+                          width={100}
+                          height={100}
+                          className="h-16 w-16 shrink-0 rounded-xl object-cover ring-1 ring-border/50"
                         />
                       ) : (
                         <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-muted font-display font-bold text-muted-foreground">
@@ -183,27 +208,29 @@ export function CartPage() {
 
                       {/* Stepper */}
                       <div className="flex h-9 shrink-0 items-center rounded-lg border border-border/80 bg-background shadow-xs">
-                        <button 
-                          onClick={() => cart.remove(item.id)} 
-                          className="grid h-9 w-8 place-items-center text-muted-foreground transition-colors hover:text-foreground active:scale-95" 
+                        <button
+                          onClick={() => cart.remove(item.id)}
+                          className="grid h-9 w-8 place-items-center text-muted-foreground transition-colors hover:text-foreground active:scale-95"
                           aria-label="Remove one"
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
-                        <span className="w-7 text-center text-xs font-extrabold text-foreground">{qty}</span>
-                        <button 
-                          onClick={() => cart.add(item)} 
-                          disabled={qty >= 50} 
-                          className="grid h-9 w-8 place-items-center text-forest transition-colors hover:text-forest/80 disabled:opacity-40 active:scale-95" 
+                        <span className="w-7 text-center text-xs font-extrabold text-foreground">
+                          {qty}
+                        </span>
+                        <button
+                          onClick={() => cart.add(item)}
+                          disabled={qty >= 50}
+                          className="grid h-9 w-8 place-items-center text-forest transition-colors hover:text-forest/80 disabled:opacity-40 active:scale-95"
                           aria-label="Add one"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
 
-                      <button 
-                        onClick={() => cart.removeLine(item.id)} 
-                        className="grid h-9 w-8 shrink-0 place-items-center text-muted-foreground/70 transition-colors hover:text-destructive" 
+                      <button
+                        onClick={() => cart.removeLine(item.id)}
+                        className="grid h-9 w-8 shrink-0 place-items-center text-muted-foreground/70 transition-colors hover:text-destructive"
                         aria-label={`Remove ${item.name}`}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -218,11 +245,11 @@ export function CartPage() {
                 <div className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Special Kitchen Requests
                 </div>
-                <Textarea 
-                  value={notes} 
-                  onChange={(e) => setNotes(e.target.value.slice(0, 300))} 
-                  placeholder="e.g. Less spicy, keep chutney on the side, extra napkins..." 
-                  className="rounded-xl border-border/70 bg-background text-sm transition-all focus:border-forest focus:ring-forest/20 shadow-xs resize-none" 
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value.slice(0, 300))}
+                  placeholder="e.g. Less spicy, keep chutney on the side, extra napkins..."
+                  className="rounded-xl border-border/70 bg-background text-sm transition-all focus:border-forest focus:ring-forest/20 shadow-xs resize-none"
                   rows={3}
                 />
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -244,7 +271,9 @@ export function CartPage() {
             <aside className="space-y-4">
               <div className="hidden rounded-2xl border border-border/70 bg-card p-4 shadow-soft lg:block">
                 <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Table & Guest</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Table & Guest
+                  </p>
                   <span className="text-[11px] text-muted-foreground">Required for order</span>
                 </div>
                 <GuestDetails errors={errors} className="grid-cols-1" />
@@ -255,15 +284,19 @@ export function CartPage() {
                 <div className="flex items-center gap-2 border-b border-border/50 pb-2.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   <Receipt className="h-4 w-4 text-forest" /> Bill Summary
                 </div>
-                
+
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Items Subtotal</span>
-                    <span className="font-semibold text-foreground">{formatINR(cart.subtotal)}</span>
+                    <span className="font-semibold text-foreground">
+                      {formatINR(cart.subtotal)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Taxes & Charges</span>
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">Included</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      Included
+                    </span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
                     <span>Payment Method</span>
@@ -278,7 +311,10 @@ export function CartPage() {
 
                 <div className="rounded-xl bg-forest/5 p-3 text-xs text-forest flex items-start gap-2.5 border border-forest/15">
                   <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5" />
-                  <span>Your order goes straight to the kitchen. You can pay via cash/card/UPI at the counter after dining.</span>
+                  <span>
+                    Your order goes straight to the kitchen. You can pay via cash/card/UPI at the
+                    counter after dining.
+                  </span>
                 </div>
               </div>
             </aside>

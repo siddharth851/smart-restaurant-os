@@ -2,7 +2,14 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import type { PublicItem } from "./restaurant-api";
 
 type CartLine = { item: PublicItem; qty: number };
-export type PlacedOrder = { code: string; total: number; createdAt: string; table: number; customerName: string; lines: { name: string; qty: number; price: number }[] };
+export type PlacedOrder = {
+  code: string;
+  total: number;
+  createdAt: string;
+  table: number;
+  customerName: string;
+  lines: { name: string; qty: number; price: number }[];
+};
 type CartCtx = {
   lines: CartLine[];
   count: number;
@@ -36,7 +43,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const g = JSON.parse(sessionStorage.getItem(GUEST_KEY) ?? "null");
       if (g?.name) setCustomerName(String(g.name));
       if (g?.table) setTable(Number(g.table));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
   useEffect(() => {
     sessionStorage.setItem(GUEST_KEY, JSON.stringify({ name: customerName, table }));
@@ -55,7 +64,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       qtyOf: (id) => lines[id]?.qty ?? 0,
       add: (item) => {
         if (!item.available) return;
-        setLines((p) => ({ ...p, [item.id]: { item, qty: Math.min(50, (p[item.id]?.qty ?? 0) + 1) } }));
+        setLines((p) => ({
+          ...p,
+          [item.id]: { item, qty: Math.min(50, (p[item.id]?.qty ?? 0) + 1) },
+        }));
       },
       remove: (id) =>
         setLines((p) => {
@@ -63,7 +75,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (!cur) return p;
           return { ...p, [id]: { ...cur, qty: Math.max(0, cur.qty - 1) } };
         }),
-      removeLine: (id) => setLines((p) => { const n = { ...p }; delete n[id]; return n; }),
+      removeLine: (id) =>
+        setLines((p) => {
+          const n = { ...p };
+          delete n[id];
+          return n;
+        }),
       clear: () => setLines({}),
       lastOrder,
       setLastOrder,

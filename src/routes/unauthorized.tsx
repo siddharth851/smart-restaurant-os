@@ -14,12 +14,22 @@ export const Route = createFileRoute("/unauthorized")({
     ],
   }),
   component: () => (
-    <AuthShell eyebrow="Access denied" title="You don't have access here" subtitle="Your account's role doesn't include this area. If you think this is a mistake, ask your restaurant owner.">
+    <AuthShell
+      eyebrow="Access denied"
+      title="You don't have access here"
+      subtitle="Your account's role doesn't include this area. If you think this is a mistake, ask your restaurant owner."
+    >
       <div className="flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-soft">
-        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-destructive/10 text-destructive"><ShieldAlert /></div>
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-destructive/10 text-destructive">
+          <ShieldAlert />
+        </div>
         <div className="flex flex-wrap gap-2">
-          <Button asChild><Link to="/login">Switch account</Link></Button>
-          <Button asChild variant="outline"><Link to="/">Home</Link></Button>
+          <Button asChild>
+            <Link to="/login">Switch account</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/">Home</Link>
+          </Button>
         </div>
       </div>
     </AuthShell>

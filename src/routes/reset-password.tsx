@@ -33,7 +33,11 @@ function Reset() {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setReady(true);
     });
-    supabase.auth.getSession().then(({ data: s }) => setReady((prev) => (isRecovery || s.session ? true : (prev ?? false))));
+    supabase.auth
+      .getSession()
+      .then(({ data: s }) =>
+        setReady((prev) => (isRecovery || s.session ? true : (prev ?? false))),
+      );
     return () => data.subscription.unsubscribe();
   }, []);
 
@@ -57,22 +61,48 @@ function Reset() {
   };
 
   return (
-    <AuthShell eyebrow="Account recovery" title="Set a new password" footer={<Link to="/login" className="font-semibold text-primary">Back to sign in</Link>}>
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Set a new password"
+      footer={
+        <Link to="/login" className="font-semibold text-primary">
+          Back to sign in
+        </Link>
+      }
+    >
       {done ? (
         <FormAlert tone="success">Password updated. Redirecting you to sign in…</FormAlert>
       ) : ready === false ? (
-        <FormAlert tone="error">This reset link is invalid or has expired. <Link to="/forgot-password" className="font-semibold underline">Request a new one</Link>.</FormAlert>
+        <FormAlert tone="error">
+          This reset link is invalid or has expired.{" "}
+          <Link to="/forgot-password" className="font-semibold underline">
+            Request a new one
+          </Link>
+          .
+        </FormAlert>
       ) : (
         <form onSubmit={onSubmit} noValidate className="space-y-5">
           {formError && <FormAlert tone="error">{formError}</FormAlert>}
           <div>
             <Label htmlFor="password">New password</Label>
-            <Input id="password" name="password" type="password" autoComplete="new-password" className="mt-2 h-12" />
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              className="mt-2 h-12"
+            />
             <FieldError message={errors["password"]} />
           </div>
           <div>
             <Label htmlFor="confirm">Confirm password</Label>
-            <Input id="confirm" name="confirm" type="password" autoComplete="new-password" className="mt-2 h-12" />
+            <Input
+              id="confirm"
+              name="confirm"
+              type="password"
+              autoComplete="new-password"
+              className="mt-2 h-12"
+            />
             <FieldError message={errors["confirm"]} />
           </div>
           <Button

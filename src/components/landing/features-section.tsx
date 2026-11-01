@@ -1,11 +1,4 @@
-import {
-  QrCode,
-  ChefHat,
-  BookOpen,
-  Clock,
-  BarChart3,
-  LayoutGrid,
-} from "lucide-react";
+import { QrCode, ChefHat, BookOpen, Clock, BarChart3, LayoutGrid } from "lucide-react";
 
 export function FeaturesSection() {
   const features = [
@@ -66,7 +59,8 @@ export function FeaturesSection() {
             <span className="text-emerald-600">Smarter Restaurant</span>
           </h2>
           <p className="mt-4 text-base sm:text-lg text-stone-600 leading-relaxed">
-            From QR ordering to real-time kitchen updates, DineOS helps you save time, reduce costs, and create a better dining experience for your customers.
+            From QR ordering to real-time kitchen updates, DineOS helps you save time, reduce costs,
+            and create a better dining experience for your customers.
           </p>
         </div>
 
@@ -87,9 +81,7 @@ export function FeaturesSection() {
                 <h3 className="font-display text-lg font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">
                   {feat.title}
                 </h3>
-                <p className="mt-2 text-sm text-stone-600 leading-relaxed">
-                  {feat.desc}
-                </p>
+                <p className="mt-2 text-sm text-stone-600 leading-relaxed">{feat.desc}</p>
               </div>
             );
           })}
