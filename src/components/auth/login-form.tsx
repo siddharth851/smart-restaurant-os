@@ -14,6 +14,7 @@ import {
   type AppRole 
 } from "@/lib/auth";
 import { authenticateSuperAdminServer } from "@/lib/admin.server";
+import { confirmUserServerFn } from "@/lib/auth.server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,8 +73,22 @@ export function LoginForm({ allowed, wrongPortalHint, redirectTo }: { allowed: A
 
     // 2. Authenticate Restaurant Owner via Supabase Auth
     try {
-      const { data: suData, error: suError } = await supabase.auth.signInWithPassword({ email, password });
+      let { data: suData, error: suError } = await supabase.auth.signInWithPassword({ email, password });
       
+      // Auto-confirm existing unconfirmed accounts server-side without user intervention
+      if (suError && suError.message.toLowerCase().includes("email not confirmed")) {
+        try {
+          const conf = await confirmUserServerFn({ data: { email } });
+          if (conf.ok) {
+            const retry = await supabase.auth.signInWithPassword({ email, password });
+            suData = retry.data;
+            suError = retry.error;
+          }
+        } catch {
+          // Continue to error display if server confirm fails
+        }
+      }
+
       if (suError) {
         setLoading(false);
         setFormError(suError.message || "Incorrect email or password.");

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthShell, FieldError, FormAlert } from "@/components/auth/auth-shell";
 import { setLocalSession, SUPER_ADMIN_EMAIL } from "@/lib/auth";
+import { confirmUserServerFn } from "@/lib/auth.server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -96,7 +97,17 @@ function Register() {
 
       const userId = suData.user.id;
 
-      // 2. Wait for the PostgreSQL trigger handle_new_user() to commit the restaurant and roles
+      // 2. Ensure real Supabase session is active
+      if (!suData.session) {
+        try {
+          await confirmUserServerFn({ data: { email: d.email } });
+          await supabase.auth.signInWithPassword({ email: d.email, password: d.password });
+        } catch {
+          // If server confirmation is unavailable, continue with trigger check
+        }
+      }
+
+      // 3. Wait for the PostgreSQL trigger handle_new_user() to commit the restaurant and roles
       let restaurantId: string | undefined;
       let restaurantSlug: string | undefined;
 
